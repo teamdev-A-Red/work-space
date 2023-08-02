@@ -9,11 +9,22 @@ cvs.width = canvasW;
 cvs.height = canvasH;
 cvs.style.width = canvasW + "px";
 
-const draw = () => {
-  ctx.fillStyle = "#000";
-  ctx.fillRect(0, 0, canvasW, canvasH);
+class GameBoard {
+  constructor() {
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, canvasW, canvasH);
+  }
+
+  startGame() {}
+}
+
+const startGame = () => {
+  const newGame = new GameBoard();
+  newGame.startGame();
 };
-//初期化処理
+
 const init = () => {
-  draw();
+  startGame();
 };
+
+init();
