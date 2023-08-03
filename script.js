@@ -35,6 +35,74 @@ const SHAPES = {
   ],
 };
 
+// ***新しい画面(透明)にテトリスブロックを表示しよう***//
+class TetoriminoBoard {
+  constructor() {
+    this.cvs = document.getElementById("tetorimino");
+    this.ctx = this.cvs.getContext("2d");
+    this.boardRow = 20;
+    this.boardCol = 10;
+    this.blockSize = 30;
+    this.canvasW = this.blockSize * this.boardCol;
+    this.canvasH = this.blockSize * this.boardRow;
+    this.cvs.width = this.canvasW;
+    this.cvs.height = this.canvasH;
+    this.cvs.style.width = this.canvasW + "px";
+    this.board = this.createEmptyArea();
+  };
+
+  createEmptyArea() {
+    this.gameArea = Array.from({ length: this.boardRow }, () =>
+      Array(this.boardCol).fill(0)
+    );
+    return this.gameArea;
+  };
+
+  drawGameArea() {
+    for (let row = 0; row < this.gameArea.length; row++) {
+      for (let col = 0; col < this.gameArea[row].length; col++) {
+        if (this.gameArea[row][col] === 0) {
+          const blockX = col * this.blockSize;
+          const blockY = row * this.blockSize;
+          this.ctx.fillStyle = "rgba(0, 0, 0, 0)";
+          this.ctx.fillRect(blockX, blockY, this.blockSize, this.blockSize);
+        }
+      }
+    }
+  };
+
+  gameStart() {
+    this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
+
+    const startX = 4; // ブロックの開始位置X
+    const startY = 0; // ブロックの開始位置Y
+    const blockSize = this.blockSize;
+
+    // テトリスブロックの描画
+    this.ctx.strokeStyle = "rgba(0, 0, 0, 1)"; // 枠線の色を黒に設定
+
+    // テトリスブロックの形状を取得
+    const blockShape = SHAPES["L"]; // 例として "L" 形状を指定
+
+    for (let row = 0; row < blockShape.length; row++) {
+      for (let col = 0; col < blockShape[row].length; col++) {
+        if (blockShape[row][col] === 1) {
+          const x = (col + startX) * blockSize;
+          const y = (row + startY) * blockSize;
+          this.ctx.fillStyle = COLORS[1]; // ブロックの色を取得 (ここでは "L" ブロックは赤色に設定)
+          this.ctx.fillRect(x, y, blockSize, blockSize); // ブロックを塗りつぶす
+          this.ctx.strokeRect(x, y, blockSize, blockSize); // ブロックの枠線を描画
+        }
+      }
+    }
+  }
+};
+
+
+
+
+
+
 class GameBoard {
   constructor() {
     this.cvs = document.getElementById("game");
@@ -130,3 +198,8 @@ const init = () => {
 //     newBlock.moveDown();
 //   }
 // });
+
+const startGame = () => {
+  const tetoriminoBoard = new TetoriminoBoard(); // 新たなゲーム画面を作成
+  tetoriminoBoard.gameStart(); // テトリスブロックを描画
+};

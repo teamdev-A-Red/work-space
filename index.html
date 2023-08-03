@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tetris</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
 
-  <body onload="init()">
-    <h1 class="h1">テトリス</h1>
-    <div class="scoreBoard">スコア : <span id="score">0</span></div>
-    <!-- <canvas id="back"></canvas> -->
-    <canvas id="game"></canvas>
-    <!-- <canvas id="next"></canvas> -->
-    <button id="start_btn">ゲーム<br />スタート</button>
-    <button id="pose_btn">ポーズ</button>
-    <button id="reset_btn">リセット</button>
-    <script src="script.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tetris</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body onload="init()">
+  <h1 class="h1">テトリス</h1>
+  <div class="scoreBoard">スコア : <span id="score">0</span></div>
+  <!-- <canvas id="back"></canvas> -->
+  <canvas id="game"></canvas>
+  <canvas id="tetorimino"></canvas> <!--新しく追加(透明にしてテトリミノブロックを表示したい)-->>
+  <!-- <canvas id="next"></canvas> -->
+  <button id="start_btn" onclick="startGame()">ゲーム<br />スタート</button>
+  <button id="pose_btn">ポーズ</button>
+  <button id="reset_btn">リセット</button>
+  <script src="script.js"></script>
+</body>
+
 </html>
