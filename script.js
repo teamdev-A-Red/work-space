@@ -15,14 +15,14 @@ const SHAPES = {
     [0, 0, 0],
   ],
 
-  // T-shape
+  // // T-shape
   T: [
     [0, 1, 0],
     [1, 1, 1],
     [0, 0, 0],
   ],
 
-  // I-shape
+  // // I-shape
   I: [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -39,7 +39,7 @@ const SHAPES = {
 
 // テトリミノを表示するためのクラス
 class TetoriminoBoard {
-  constructor() {
+  constructor(shape, color) {
     this.cvs = document.getElementById("tetorimino");
     this.ctx = this.cvs.getContext("2d");
     this.boardRow = 20;
@@ -47,6 +47,8 @@ class TetoriminoBoard {
     this.blockSize = 30;
     this.canvasW = this.blockSize * this.boardCol;
     this.canvasH = this.blockSize * this.boardRow;
+    this.currentShape = shape;
+    this.color = color;
     this.setupCanvas();
     this.setupInitialPosition();
   }
@@ -66,16 +68,16 @@ class TetoriminoBoard {
   }
 
   // テトリミノを描画
-  drawBlock(shape, color) {
+  drawBlock() {
     this.clearCanvas();
     const blockSize = this.blockSize;
 
-    for (let row = 0; row < shape.length; row++) {
-      for (let col = 0; col < shape[row].length; col++) {
-        if (shape[row][col] === 1) {
+    for (let row = 0; row < this.currentShape.length; row++) {
+      for (let col = 0; col < this.currentShape[row].length; col++) {
+        if (this.currentShape[row][col] === 1) {
           const x = (col + this.x) * blockSize;
           const y = (row + this.y) * blockSize;
-          this.drawSquare(x, y, blockSize, color);
+          this.drawSquare(x, y, blockSize, this.color);
         }
       }
     }
@@ -96,6 +98,47 @@ class TetoriminoBoard {
   // ブロックの回転
   rotateBlock() {
     // 回転ロジックの実装
+    const originalShape = this.currentShape; // 現在の形状を保存
+    const rotationStates = this.getRotationStates(originalShape);
+    const currentIndex = rotationStates.indexOf(this.currentShape);
+    const nextIndex = (currentIndex + 1) % rotationStates.length;
+    const rotatedShape = rotationStates[nextIndex];
+
+    // 回転した形状を適用
+    this.currentShape = rotatedShape;
+
+    this.drawBlock();
+  }
+
+  // 回転可能な状態の生成
+  getRotationStates(shape) {
+    const rotationStates = [shape];
+    let rotatedShape = shape;
+
+    // 90度ずつ回転状態を生成
+    for (let i = 0; i < 3; i++) {
+      rotatedShape = this.rotate90Degrees(rotatedShape);
+      rotationStates.push(rotatedShape);
+    }
+
+    return rotationStates;
+  }
+
+  // 90度回転
+  rotate90Degrees(shape) {
+    const numRows = shape.length;
+    const numCols = shape[0].length;
+    const rotatedShape = [];
+
+    for (let col = 0; col < numCols; col++) {
+      const newRow = [];
+      for (let row = numRows - 1; row >= 0; row--) {
+        newRow.push(shape[row][col]);
+      }
+      rotatedShape.push(newRow);
+    }
+
+    return rotatedShape;
   }
 
   // 右に移動
@@ -184,10 +227,10 @@ class GameBoard {
 // ゲームの開始
 const startGame = () => {
   const gameBoard = new GameBoard();
-  const tetoriminoBoard = new TetoriminoBoard();
+  const tetoriminoBoard = new TetoriminoBoard(SHAPES.I, COLORS[1]);
 
   gameBoard.drawGameArea();
-  tetoriminoBoard.drawBlock(SHAPES.L, COLORS[1]);
+  tetoriminoBoard.drawBlock();
 
   // キー入力のリスナーを追加
   window.addEventListener("keydown", (event) => {
@@ -196,8 +239,7 @@ const startGame = () => {
 
   // ゲームループの実行
   function gameLoop() {
-    tetoriminoBoard.moveDown();
-    tetoriminoBoard.drawBlock(SHAPES.L, COLORS[1]);
+    tetoriminoBoard.drawBlock(SHAPES.I, COLORS[1]);
     requestAnimationFrame(gameLoop);
   }
 
