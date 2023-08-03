@@ -84,6 +84,7 @@ class TetoriminoBoard {
     // テトリスブロックの形状を取得
     const blockShape = SHAPES["L"]; // 例として "L" 形状を指定
 
+
     for (let row = 0; row < blockShape.length; row++) {
       for (let col = 0; col < blockShape[row].length; col++) {
         if (blockShape[row][col] === 1) {

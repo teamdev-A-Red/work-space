@@ -12,8 +12,10 @@
   <h1 class="h1">テトリス</h1>
   <div class="scoreBoard">スコア : <span id="score">0</span></div>
   <!-- <canvas id="back"></canvas> -->
-  <canvas id="game"></canvas>
-  <canvas id="tetorimino"></canvas> <!--新しく追加(透明にしてテトリミノブロックを表示したい)-->>
+  <div style="position: relative;">
+    <canvas id="game"></canvas>
+    <canvas id="tetorimino" style="position: absolute; top: 0; left: 0;"></canvas> <!--新しく追加(透明にしてテトリミノブロックを表示したい)-->>
+  </div>
   <!-- <canvas id="next"></canvas> -->
   <button id="start_btn" onclick="startGame()">ゲーム<br />スタート</button>
   <button id="pose_btn">ポーズ</button>
