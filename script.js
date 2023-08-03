@@ -51,6 +51,7 @@ class TetoriminoBoard {
     this.color = color;
     this.setupCanvas();
     this.setupInitialPosition();
+    this.drawRandomBlock();
   }
 
   // キャンバスのセットアップ
@@ -65,6 +66,19 @@ class TetoriminoBoard {
   setupInitialPosition() {
     this.x = 4;
     this.y = 0;
+  }
+
+  // ランダムなテトリミノを描画
+  drawRandomBlock() {
+    const shapeKeys = Object.keys(SHAPES);
+    const randomShapeKey =
+      shapeKeys[Math.floor(Math.random() * shapeKeys.length)];
+    const randomShape = SHAPES[randomShapeKey];
+    const randomColor =
+      COLORS[Math.floor(Math.random() * Object.keys(COLORS).length) + 1];
+
+    this.currentShape = randomShape;
+    this.color = randomColor;
   }
 
   // テトリミノを描画
@@ -176,34 +190,49 @@ class TetoriminoBoard {
   }
 
   // 右に移動
-  moveRight() {
-    this.x++;
+  moveRight(gameBoard) {
+    // 移動先が衝突しないかチェック
+    if (
+      !this.checkCollision(gameBoard, this.currentShape, this.x + 1, this.y)
+    ) {
+      this.x++;
+    }
   }
 
   // 下に移動
-  moveDown() {
-    this.y++;
+  moveDown(gameBoard) {
+    // 移動先が衝突しないかチェック
+    if (
+      !this.checkCollision(gameBoard, this.currentShape, this.x, this.y + 1)
+    ) {
+      this.y++;
+    }
   }
 
   // 左に移動
-  moveLeft() {
-    this.x--;
+  moveLeft(gameBoard) {
+    // 移動先が衝突しないかチェック
+    if (
+      !this.checkCollision(gameBoard, this.currentShape, this.x - 1, this.y)
+    ) {
+      this.x--;
+    }
   }
 
   // キー入力の処理
   handleKeyPress(event, gameBoard) {
     switch (event.keyCode) {
       case 37: // 左矢印キー
-        this.moveLeft();
+        this.moveLeft(gameBoard);
         break;
       case 38: // 上矢印キー
         this.rotateBlock(gameBoard);
         break;
       case 39: // 右矢印キー
-        this.moveRight();
+        this.moveRight(gameBoard);
         break;
       case 40: // 下矢印キー
-        this.moveDown();
+        this.moveDown(gameBoard);
         break;
     }
   }
@@ -287,10 +316,10 @@ class GameBoard {
 // ゲームの開始
 const startGame = () => {
   const gameBoard = new GameBoard();
-  const tetoriminoBoard = new TetoriminoBoard(SHAPES.L, COLORS[1]);
+  const tetoriminoBoard = new TetoriminoBoard();
 
   gameBoard.drawGameArea();
-  tetoriminoBoard.drawBlock();
+  tetoriminoBoard.drawRandomBlock();
 
   // キー入力のリスナーを追加
   window.addEventListener("keydown", (event) => {
@@ -300,15 +329,16 @@ const startGame = () => {
   // ゲームループの実行
   function gameLoop() {
     if (
-      !tetoriminoBoard.checkCollision(
+      tetoriminoBoard.checkCollision(
         gameBoard,
         tetoriminoBoard.currentShape,
         tetoriminoBoard.x,
         tetoriminoBoard.y
       )
     ) {
-      tetoriminoBoard.drawBlock();
+      tetoriminoBoard.adjustPosition(gameBoard);
     }
+    tetoriminoBoard.drawBlock();
     requestAnimationFrame(gameLoop);
   }
 
