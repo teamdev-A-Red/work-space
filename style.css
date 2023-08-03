@@ -52,4 +52,13 @@
   height: 25px;
 } */
 
-test
+.container {
+  position: relative;
+}
+
+#game,
+#tetorimino {
+  position: absolute;
+  top: 0;
+  left: 300px;
+}
