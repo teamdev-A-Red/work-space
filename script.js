@@ -270,6 +270,7 @@ class GameBoard {
     this.cvs.height = this.canvasH;
     this.cvs.style.width = this.canvasW + "px";
     this.ctx.fillStyle = "#000";
+    this.ctx.strokeStyle = "rgba(0, 0, 0, 1)";
   }
 
   // 空のゲームエリアを作成
@@ -283,19 +284,50 @@ class GameBoard {
   drawBlock(x, y, color) {
     this.ctx.fillStyle = color;
     this.ctx.fillRect(x, y, this.blockSize, this.blockSize);
+    this.ctx.strokeRect(x, y, this.blockSize, this.blockSize);
   }
 
   // ゲームエリアを描画
-  drawGameArea() {
+  drawGameArea(tetoriminoBoard) {
     for (let row = 0; row < this.gameArea.length; row++) {
       for (let col = 0; col < this.gameArea[row].length; col++) {
+        const blockX = col * this.blockSize;
+        const blockY = row * this.blockSize;
         if (this.gameArea[row][col] === 0) {
-          const blockX = col * this.blockSize;
-          const blockY = row * this.blockSize;
           this.drawBlock(blockX, blockY, "#000");
+        } else {
+          // マージされた部分をテトリミノの色で描画
+          const colorIndex = this.gameArea[row][col];
+          const color = COLORS[colorIndex];
+          this.drawBlock(blockX, blockY, color);
         }
       }
     }
+  }
+
+  mergeBlock(tetoriminoBoard) {
+    const shape = tetoriminoBoard.currentShape;
+    const x = tetoriminoBoard.x;
+    const y = tetoriminoBoard.y;
+    const colorIndex = Object.keys(COLORS).find(
+      (key) => COLORS[key] === tetoriminoBoard.color
+    );
+
+    for (let row = 0; row < shape.length; row++) {
+      for (let col = 0; col < shape[row].length; col++) {
+        if (shape[row][col] === 1) {
+          const boardX = x + col;
+          const boardY = y + row;
+
+          // ゲームボード上で占有されるように設定
+          this.gameArea[boardY][boardX] = colorIndex;
+        }
+      }
+    }
+
+    // 新しいテトリミノを生成し、初期位置を設定
+    tetoriminoBoard.drawRandomBlock();
+    tetoriminoBoard.setupInitialPosition();
   }
 }
 
@@ -304,7 +336,7 @@ const startGame = () => {
   const gameBoard = new GameBoard();
   const tetoriminoBoard = new TetoriminoBoard();
 
-  gameBoard.drawGameArea();
+  gameBoard.drawGameArea(tetoriminoBoard);
   tetoriminoBoard.drawRandomBlock();
 
   // キー入力のリスナーを追加
@@ -314,6 +346,18 @@ const startGame = () => {
 
   // ゲームループの実行
   function gameLoop() {
+    if (
+      tetoriminoBoard.checkCollision(
+        gameBoard,
+        tetoriminoBoard.currentShape,
+        tetoriminoBoard.x,
+        tetoriminoBoard.y + 1
+      )
+    ) {
+      // テトリミノをゲームボードにマージ
+      gameBoard.mergeBlock(tetoriminoBoard);
+      gameBoard.drawGameArea(tetoriminoBoard);
+    }
     tetoriminoBoard.drawBlock();
     requestAnimationFrame(gameLoop);
   }
