@@ -76,7 +76,6 @@ class TetoriminoBoard {
     const randomShape = SHAPES[randomShapeKey];
     const randomColor =
       COLORS[Math.floor(Math.random() * Object.keys(COLORS).length) + 1];
-
     this.currentShape = randomShape;
     this.color = randomColor;
   }
@@ -117,27 +116,14 @@ class TetoriminoBoard {
     const currentIndex = rotationStates.indexOf(this.currentShape);
     const nextIndex = (currentIndex + 1) % rotationStates.length;
     const rotatedShape = rotationStates[nextIndex];
+    this.currentShape = rotatedShape;
 
-    // ゲーム画面の枠内に移動するように調整
-    let adjustedX = this.x;
-    let adjustedY = this.y;
-    if (adjustedX < 0) {
-      adjustedX = 0;
-    } else if (adjustedX + rotatedShape[0].length > gameBoard.boardCol) {
-      adjustedX = gameBoard.boardCol - rotatedShape[0].length;
-    }
-    if (adjustedY + rotatedShape.length > gameBoard.boardRow) {
-      adjustedY = gameBoard.boardRow - rotatedShape.length;
+    // 衝突判定を行い、回転した形状が設置不可能なら、位置を調整
+    if (this.checkCollision(gameBoard, rotatedShape, this.x, this.y)) {
+      this.adjustPosition(gameBoard);
     }
 
-    // 衝突判定を行い、回転した形状が設置可能かチェック
-    if (!this.checkCollision(gameBoard, rotatedShape, adjustedX, adjustedY)) {
-      this.currentShape = rotatedShape;
-      this.x = adjustedX;
-      this.y = adjustedY;
-
-      this.drawBlock();
-    }
+    this.drawBlock();
   }
 
   // テトリミノの位置をゲーム画面の枠内に調整
@@ -328,16 +314,6 @@ const startGame = () => {
 
   // ゲームループの実行
   function gameLoop() {
-    if (
-      tetoriminoBoard.checkCollision(
-        gameBoard,
-        tetoriminoBoard.currentShape,
-        tetoriminoBoard.x,
-        tetoriminoBoard.y
-      )
-    ) {
-      tetoriminoBoard.adjustPosition(gameBoard);
-    }
     tetoriminoBoard.drawBlock();
     requestAnimationFrame(gameLoop);
   }
