@@ -182,6 +182,7 @@ class TetoriminoBoard {
       !this.checkCollision(gameBoard, this.currentShape, this.x + 1, this.y)
     ) {
       this.x++;
+      document.getElementById('move').play();
     }
   }
 
@@ -192,6 +193,7 @@ class TetoriminoBoard {
       !this.checkCollision(gameBoard, this.currentShape, this.x, this.y + 1)
     ) {
       this.y++;
+      document.getElementById('move').play();
     }
   }
 
@@ -202,6 +204,7 @@ class TetoriminoBoard {
       !this.checkCollision(gameBoard, this.currentShape, this.x - 1, this.y)
     ) {
       this.x--;
+      document.getElementById('move').play();
     }
   }
 
@@ -333,6 +336,7 @@ class GameBoard {
 
 // ゲームの開始
 const startGame = () => {
+  document.getElementById('background_mp3').play();
   const gameBoard = new GameBoard();
   const tetoriminoBoard = new TetoriminoBoard();
 
