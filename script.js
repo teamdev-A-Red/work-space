@@ -325,9 +325,35 @@ class GameBoard {
       }
     }
 
+    // 横一列が揃ったかどうかをチェックし、揃った行を削除
+    this.checkAndClearLines();
+
     // 新しいテトリミノを生成し、初期位置を設定
     tetoriminoBoard.drawRandomBlock();
     tetoriminoBoard.setupInitialPosition();
+  }
+
+  // 横一列が揃ったかどうかをチェックし、揃った行を削除
+  checkAndClearLines() {
+    let linesCleared = 0;
+    for (let row = this.gameArea.length - 1; row >= 0; row--) {
+      if (this.isLineFull(row)) {
+        this.clearLine(row);
+        linesCleared++;
+      }
+    }
+    return linesCleared;
+  }
+
+  // 指定された行がすべて埋まっているかをチェック
+  isLineFull(row) {
+    return this.gameArea[row].every((cell) => cell !== 0);
+  }
+
+  // 指定された行を削除し、上の行を下に詰める
+  clearLine(row) {
+    this.gameArea.splice(row, 1);
+    this.gameArea.unshift(Array(this.boardCol).fill(0));
   }
 }
 
