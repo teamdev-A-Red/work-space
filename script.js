@@ -37,6 +37,8 @@ const SHAPES = {
   ],
 };
 
+let gameRunning = true;
+
 // テトリミノを表示するためのクラス
 class TetoriminoBoard {
   constructor(shape, color) {
@@ -81,7 +83,7 @@ class TetoriminoBoard {
   }
 
   // テトリミノを描画
-  drawBlock() {
+  drawBlock(gameBoard) {
     this.clearCanvas();
     const blockSize = this.blockSize;
 
@@ -93,6 +95,13 @@ class TetoriminoBoard {
           this.drawSquare(x, y, blockSize, this.color);
         }
       }
+    }
+
+    // テトリミノが画面上に到達したかをチェックし、ゲームオーバーとする
+    if (this.checkCollision(gameBoard, this.currentShape, this.x, this.y + 1)) {
+      alert("gameover");
+      gameRunning = false;
+      console.log(gameRunning);
     }
   }
 
@@ -123,7 +132,7 @@ class TetoriminoBoard {
       this.adjustPosition(gameBoard);
     }
 
-    this.drawBlock();
+    this.drawBlock(gameBoard);
   }
 
   // テトリミノの位置をゲーム画面の枠内に調整
@@ -305,7 +314,7 @@ class GameBoard {
     }
   }
 
-  mergeBlock(tetoriminoBoard) {
+  mergeBlock(tetoriminoBoard, gameBoard) {
     const shape = tetoriminoBoard.currentShape;
     const x = tetoriminoBoard.x;
     const y = tetoriminoBoard.y;
@@ -366,26 +375,30 @@ const startGame = () => {
   tetoriminoBoard.drawRandomBlock();
 
   // キー入力のリスナーを追加
-  window.addEventListener("keydown", (event) => {
-    tetoriminoBoard.handleKeyPress(event, gameBoard);
-  });
+  if (gameRunning) {
+    window.addEventListener("keydown", (event) => {
+      tetoriminoBoard.handleKeyPress(event, gameBoard);
+    });
+  }
 
   // ゲームループの実行
   function gameLoop() {
-    if (
-      tetoriminoBoard.checkCollision(
-        gameBoard,
-        tetoriminoBoard.currentShape,
-        tetoriminoBoard.x,
-        tetoriminoBoard.y + 1
-      )
-    ) {
-      // テトリミノをゲームボードにマージ
-      gameBoard.mergeBlock(tetoriminoBoard);
-      gameBoard.drawGameArea(tetoriminoBoard);
+    if (gameRunning) {
+      if (
+        tetoriminoBoard.checkCollision(
+          gameBoard,
+          tetoriminoBoard.currentShape,
+          tetoriminoBoard.x,
+          tetoriminoBoard.y + 1
+        )
+      ) {
+        // テトリミノをゲームボードにマージ
+        gameBoard.mergeBlock(tetoriminoBoard, gameBoard);
+        gameBoard.drawGameArea(tetoriminoBoard);
+      }
+      tetoriminoBoard.drawBlock(gameBoard);
+      requestAnimationFrame(gameLoop);
     }
-    tetoriminoBoard.drawBlock();
-    requestAnimationFrame(gameLoop);
   }
 
   // ゲームループを開始
