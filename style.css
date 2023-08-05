@@ -52,6 +52,12 @@
   height: 25px;
 } */
 
+.screen {
+  width: screen;
+  height: screen;
+  padding: 20px;
+}
+
 .container {
   position: relative;
 }
