@@ -174,13 +174,13 @@ class TetoriminoBoard {
         if (this.currentShape[row][col] === 1) {
           const x = (col + this.x) * blockSize;
           const y = (row + fallPreviewY) * blockSize;
-          this.drawSquare(x, y, blockSize, "rgba(255, 255, 255, 1)");
+          this.drawSquare(x, y, blockSize, "rgba(255, 255, 255, 0.5)");
         }
       }
     }
 
     // テトリミノが画面上に到達したかをチェックし、ゲームオーバーとする
-    if (this.checkCollision(gameBoard, this.currentShape, this.x, this.y + 1)) {
+    if (this.checkCollision(gameBoard, this.currentShape, this.x, this.y)) {
       alert("gameover");
       gameRunning = false;
       console.log(gameRunning);
