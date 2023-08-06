@@ -87,12 +87,27 @@ class TetoriminoBoard {
     this.clearCanvas();
     const blockSize = this.blockSize;
 
+    // 通常のテトリミノを描画
     for (let row = 0; row < this.currentShape.length; row++) {
       for (let col = 0; col < this.currentShape[row].length; col++) {
         if (this.currentShape[row][col] === 1) {
           const x = (col + this.x) * blockSize;
           const y = (row + this.y) * blockSize;
           this.drawSquare(x, y, blockSize, this.color);
+        }
+      }
+    }
+
+    // 落下予測位置を取得
+    const fallPreviewY = this.getFallPreviewPosition(gameBoard);
+
+    // 落下予測のテトリミノを描画
+    for (let row = 0; row < this.currentShape.length; row++) {
+      for (let col = 0; col < this.currentShape[row].length; col++) {
+        if (this.currentShape[row][col] === 1) {
+          const x = (col + this.x) * blockSize;
+          const y = (row + fallPreviewY) * blockSize;
+          this.drawSquare(x, y, blockSize, "rgba(255, 255, 255, 0.3)");
         }
       }
     }
@@ -257,6 +272,21 @@ class TetoriminoBoard {
     }
     return false; // 衝突なし
   }
+
+  getFallPreviewPosition(gameBoard) {
+    let fallPreviewY = this.y;
+    while (
+      !this.checkCollision(
+        gameBoard,
+        this.currentShape,
+        this.x,
+        fallPreviewY + 1
+      )
+    ) {
+      fallPreviewY++;
+    }
+    return fallPreviewY;
+  }
 }
 
 // ゲームボードを表示するためのクラス
@@ -396,6 +426,7 @@ const startGame = () => {
         gameBoard.mergeBlock(tetoriminoBoard, gameBoard);
         gameBoard.drawGameArea(tetoriminoBoard);
       }
+
       tetoriminoBoard.drawBlock(gameBoard);
       requestAnimationFrame(gameLoop);
     }
