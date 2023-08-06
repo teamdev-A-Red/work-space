@@ -41,7 +41,8 @@ let gameRunning = true;
 
 // テトリミノを表示するためのクラス
 class TetoriminoBoard {
-  constructor(shape, color) {
+  constructor(gameBoard, shape, color) {
+    this.gameBoard = gameBoard;
     this.cvs = document.getElementById("tetorimino");
     this.ctx = this.cvs.getContext("2d");
     this.boardRow = 20;
@@ -54,6 +55,7 @@ class TetoriminoBoard {
     this.setupCanvas();
     this.setupInitialPosition();
     this.drawRandomBlock();
+    this.startGame();
   }
 
   // キャンバスのセットアップ
@@ -68,6 +70,49 @@ class TetoriminoBoard {
   setupInitialPosition() {
     this.x = 4;
     this.y = 0;
+  }
+
+  startGame() {
+    this.gameBoard.drawGameArea();
+    // 自動でテトリミノを下に移動する間隔（ミリ秒）
+    const AUTO_MOVE_INTERVAL = 500;
+
+    // キー入力のリスナーを追加
+    if (gameRunning) {
+      window.addEventListener("keydown", (event) => {
+        this.handleKeyPress(event, this.gameBoard);
+      });
+    }
+
+    // ゲームループの実行
+    const gameLoop = () => {
+      if (gameRunning) {
+        if (
+          this.checkCollision(
+            this.gameBoard,
+            this.currentShape,
+            this.x,
+            this.y + 1
+          )
+        ) {
+          // テトリミノをゲームボードにマージ
+          this.gameBoard.mergeBlock(this, this.gameBoard);
+          this.gameBoard.drawGameArea(this);
+        }
+
+        this.drawBlock(this.gameBoard);
+        requestAnimationFrame(gameLoop);
+      }
+    };
+
+    // 自動でテトリミノを下に移動する
+    const autoMoveInterval = setInterval(() => {
+      this.moveDown(this.gameBoard);
+      gameLoop();
+    }, AUTO_MOVE_INTERVAL);
+
+    // ゲームループを開始
+    gameLoop();
   }
 
   // ランダムなテトリミノを描画
@@ -396,54 +441,8 @@ class GameBoard {
   }
 }
 
-// ゲームの開始
-const startGame = () => {
-  const gameBoard = new GameBoard();
-  const tetoriminoBoard = new TetoriminoBoard();
-
-  gameBoard.drawGameArea(tetoriminoBoard);
-  tetoriminoBoard.drawRandomBlock();
-
-  // 自動でテトリミノを下に移動する間隔（ミリ秒）
-  const AUTO_MOVE_INTERVAL = 500;
-
-  // キー入力のリスナーを追加
-  if (gameRunning) {
-    window.addEventListener("keydown", (event) => {
-      tetoriminoBoard.handleKeyPress(event, gameBoard);
-    });
-  }
-
-  // ゲームループの実行
-  function gameLoop() {
-    if (gameRunning) {
-      if (
-        tetoriminoBoard.checkCollision(
-          gameBoard,
-          tetoriminoBoard.currentShape,
-          tetoriminoBoard.x,
-          tetoriminoBoard.y + 1
-        )
-      ) {
-        // テトリミノをゲームボードにマージ
-        gameBoard.mergeBlock(tetoriminoBoard, gameBoard);
-        gameBoard.drawGameArea(tetoriminoBoard);
-      }
-
-      tetoriminoBoard.drawBlock(gameBoard);
-      requestAnimationFrame(gameLoop);
-    }
-  }
-
-  // 自動でテトリミノを下に移動する
-  const autoMoveInterval = setInterval(() => {
-    tetoriminoBoard.moveDown(gameBoard);
-    gameLoop();
-  }, AUTO_MOVE_INTERVAL);
-
-  // ゲームループを開始
-  gameLoop();
-};
-
 // ゲームを開始する
-startGame();
+function startGame() {
+  const gameBoard = new GameBoard();
+  const tetoriminoBoard = new TetoriminoBoard(gameBoard);
+}
