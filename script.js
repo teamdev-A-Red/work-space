@@ -404,6 +404,9 @@ const startGame = () => {
   gameBoard.drawGameArea(tetoriminoBoard);
   tetoriminoBoard.drawRandomBlock();
 
+  // 自動でテトリミノを下に移動する間隔（ミリ秒）
+  const AUTO_MOVE_INTERVAL = 500;
+
   // キー入力のリスナーを追加
   if (gameRunning) {
     window.addEventListener("keydown", (event) => {
@@ -431,6 +434,12 @@ const startGame = () => {
       requestAnimationFrame(gameLoop);
     }
   }
+
+  // 自動でテトリミノを下に移動する
+  const autoMoveInterval = setInterval(() => {
+    tetoriminoBoard.moveDown(gameBoard);
+    gameLoop();
+  }, AUTO_MOVE_INTERVAL);
 
   // ゲームループを開始
   gameLoop();
