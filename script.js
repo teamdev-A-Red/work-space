@@ -38,6 +38,7 @@ const SHAPES = {
 };
 
 let gameRunning = true;
+let isPaused = false; // ポーズ状態を管理するフラグ
 
 // テトリミノを表示するためのクラス
 class TetoriminoBoard {
@@ -76,17 +77,39 @@ class TetoriminoBoard {
     this.gameBoard.drawGameArea();
     // 自動でテトリミノを下に移動する間隔（ミリ秒）
     const AUTO_MOVE_INTERVAL = 500;
+    let autoMoveInterval;
 
-    // キー入力のリスナーを追加
-    if (gameRunning) {
+    // ポーズボタンのクリックイベントを追加
+    const pauseBtn = document.getElementById("pause_btn");
+    pauseBtn.addEventListener("click", () => {
+      this.togglePause();
+      if (isPaused) {
+        clearInterval(autoMoveInterval); // ポーズ時に自動移動を停止
+      } else {
+        autoMoveInterval = setInterval(() => {
+          this.moveDown(this.gameBoard);
+          gameLoop();
+        }, AUTO_MOVE_INTERVAL);
+      }
+    });
+
+    if (gameRunning && !isPaused) {
+      // 自動でテトリミノを下に移動する
+      autoMoveInterval = setInterval(() => {
+        this.moveDown(this.gameBoard);
+      }, AUTO_MOVE_INTERVAL);
+
+      // キー入力のリスナーを追加
       window.addEventListener("keydown", (event) => {
-        this.handleKeyPress(event, this.gameBoard);
+        if (!isPaused) {
+          this.handleKeyPress(event, this.gameBoard);
+        }
       });
     }
 
     // ゲームループの実行
     const gameLoop = () => {
-      if (gameRunning) {
+      if (gameRunning && !isPaused) {
         if (
           this.checkCollision(
             this.gameBoard,
@@ -105,14 +128,13 @@ class TetoriminoBoard {
       }
     };
 
-    // 自動でテトリミノを下に移動する
-    const autoMoveInterval = setInterval(() => {
-      this.moveDown(this.gameBoard);
-      gameLoop();
-    }, AUTO_MOVE_INTERVAL);
-
     // ゲームループを開始
     gameLoop();
+  }
+
+  // ポーズの切り替え
+  togglePause() {
+    isPaused = !isPaused;
   }
 
   // ランダムなテトリミノを描画
@@ -152,7 +174,7 @@ class TetoriminoBoard {
         if (this.currentShape[row][col] === 1) {
           const x = (col + this.x) * blockSize;
           const y = (row + fallPreviewY) * blockSize;
-          this.drawSquare(x, y, blockSize, "rgba(255, 255, 255, 0.3)");
+          this.drawSquare(x, y, blockSize, "rgba(255, 255, 255, 1)");
         }
       }
     }
