@@ -1,4 +1,5 @@
 const config = {
+  startBtn: document.getElementById("start_btn"),
   initialPage: document.getElementById("initialPage"),
   mainPage: document.getElementById("mainPage"),
   move: document.getElementById("move"),
@@ -499,3 +500,7 @@ function startGame() {
   const gameBoard = new GameBoard();
   const tetoriminoBoard = new TetoriminoBoard(gameBoard);
 }
+
+config.startBtn.addEventListener("click", function () {
+  startGame();
+});
