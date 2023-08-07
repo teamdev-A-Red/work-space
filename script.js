@@ -2,6 +2,8 @@ const config = {
   startBtn: document.getElementById("start_btn"),
   initialPage: document.getElementById("initialPage"),
   mainPage: document.getElementById("mainPage"),
+  pauseBtn: document.getElementById("pause_btn"),
+  score: document.getElementById("score"),
   move: document.getElementById("move"),
   rotate: document.getElementById("rotate"),
   pauseBtn: document.getElementById("pause_btn"),
@@ -101,8 +103,7 @@ class TetoriminoBoard {
     let autoMoveInterval;
 
     // ポーズボタンのクリックイベントを追加
-    const pauseBtn = document.getElementById("pause_btn");
-    pauseBtn.addEventListener("click", () => {
+    config.pauseBtn.addEventListener("click", () => {
       this.togglePause();
       if (isPaused) {
         clearInterval(autoMoveInterval); // ポーズ時に自動移動を停止
@@ -400,6 +401,7 @@ class GameBoard {
     this.canvasH = this.blockSize * this.boardRow;
     this.setupCanvas();
     this.gameArea = this.createEmptyArea();
+    this.score = 0;
   }
 
   // キャンバスのセットアップ
@@ -474,12 +476,24 @@ class GameBoard {
   // 横一列が揃ったかどうかをチェックし、揃った行を削除
   checkAndClearLines() {
     let linesCleared = 0;
+    let rowsToClear = [];
+
     for (let row = this.gameArea.length - 1; row >= 0; row--) {
       if (this.isLineFull(row)) {
-        this.clearLine(row);
+        rowsToClear.push(row);
         linesCleared++;
       }
     }
+
+    if (linesCleared > 0) {
+      rowsToClear.forEach((row) => this.clearLines(row));
+      this.score += this.calculateScore(linesCleared);
+      this.updateScoreDisplay();
+
+      // 初回の行をクリアした後、追加のクリア行があるか再帰的にチェックします
+      this.checkAndClearLines();
+    }
+
     return linesCleared;
   }
 
@@ -489,9 +503,20 @@ class GameBoard {
   }
 
   // 指定された行を削除し、上の行を下に詰める
-  clearLine(row) {
+  clearLines(row) {
     this.gameArea.splice(row, 1);
     this.gameArea.unshift(Array(this.boardCol).fill(0));
+  }
+
+  // 削除された行に基づいて、ポイントを計算する
+  calculateScore(linesCleared) {
+    const pointsPerLine = 100;
+    return linesCleared * pointsPerLine;
+  }
+
+  // ページ上のスコア表示要素を更新する
+  updateScoreDisplay() {
+    config.score.textContent = `${this.score}`;
   }
 }
 
