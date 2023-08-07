@@ -17,9 +17,14 @@
       <!--新しく追加(透明にしてテトリミノブロックを表示したい)-->>
     </div>
     <!-- <canvas id="next"></canvas> -->
-    <button id="start_btn" onclick="startGame()">ゲーム<br />スタート</button>
-    <button id="pose_btn">ポーズ</button>
+    <button id="start_btn">ゲーム<br />スタート</button>
+    <button id="pause_btn">ポーズ</button>
     <button id="reset_btn">リセット</button>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        startGame(); // ページがロードされたら startGame を呼び出す
+      });
+    </script>
     <script src="script.js"></script>
   </body>
 </html>

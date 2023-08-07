@@ -37,9 +37,13 @@ const SHAPES = {
   ],
 };
 
+let gameRunning = true;
+let isPaused = false; // ポーズ状態を管理するフラグ
+
 // テトリミノを表示するためのクラス
 class TetoriminoBoard {
-  constructor(shape, color) {
+  constructor(gameBoard, shape, color) {
+    this.gameBoard = gameBoard;
     this.cvs = document.getElementById("tetorimino");
     this.ctx = this.cvs.getContext("2d");
     this.boardRow = 20;
@@ -52,6 +56,7 @@ class TetoriminoBoard {
     this.setupCanvas();
     this.setupInitialPosition();
     this.drawRandomBlock();
+    this.startGame();
   }
 
   // キャンバスのセットアップ
@@ -68,6 +73,70 @@ class TetoriminoBoard {
     this.y = 0;
   }
 
+  startGame() {
+    this.gameBoard.drawGameArea();
+    // 自動でテトリミノを下に移動する間隔（ミリ秒）
+    const AUTO_MOVE_INTERVAL = 500;
+    let autoMoveInterval;
+
+    // ポーズボタンのクリックイベントを追加
+    const pauseBtn = document.getElementById("pause_btn");
+    pauseBtn.addEventListener("click", () => {
+      this.togglePause();
+      if (isPaused) {
+        clearInterval(autoMoveInterval); // ポーズ時に自動移動を停止
+      } else {
+        autoMoveInterval = setInterval(() => {
+          this.moveDown(this.gameBoard);
+          gameLoop();
+        }, AUTO_MOVE_INTERVAL);
+      }
+    });
+
+    if (gameRunning && !isPaused) {
+      // 自動でテトリミノを下に移動する
+      autoMoveInterval = setInterval(() => {
+        this.moveDown(this.gameBoard);
+      }, AUTO_MOVE_INTERVAL);
+
+      // キー入力のリスナーを追加
+      window.addEventListener("keydown", (event) => {
+        if (!isPaused) {
+          this.handleKeyPress(event, this.gameBoard);
+        }
+      });
+    }
+
+    // ゲームループの実行
+    const gameLoop = () => {
+      if (gameRunning && !isPaused) {
+        if (
+          this.checkCollision(
+            this.gameBoard,
+            this.currentShape,
+            this.x,
+            this.y + 1
+          )
+        ) {
+          // テトリミノをゲームボードにマージ
+          this.gameBoard.mergeBlock(this, this.gameBoard);
+          this.gameBoard.drawGameArea(this);
+        }
+
+        this.drawBlock(this.gameBoard);
+        requestAnimationFrame(gameLoop);
+      }
+    };
+
+    // ゲームループを開始
+    gameLoop();
+  }
+
+  // ポーズの切り替え
+  togglePause() {
+    isPaused = !isPaused;
+  }
+
   // ランダムなテトリミノを描画
   drawRandomBlock() {
     const shapeKeys = Object.keys(SHAPES);
@@ -81,10 +150,11 @@ class TetoriminoBoard {
   }
 
   // テトリミノを描画
-  drawBlock() {
+  drawBlock(gameBoard) {
     this.clearCanvas();
     const blockSize = this.blockSize;
 
+    // 通常のテトリミノを描画
     for (let row = 0; row < this.currentShape.length; row++) {
       for (let col = 0; col < this.currentShape[row].length; col++) {
         if (this.currentShape[row][col] === 1) {
@@ -93,6 +163,27 @@ class TetoriminoBoard {
           this.drawSquare(x, y, blockSize, this.color);
         }
       }
+    }
+
+    // 落下予測位置を取得
+    const fallPreviewY = this.getFallPreviewPosition(gameBoard);
+
+    // 落下予測のテトリミノを描画
+    for (let row = 0; row < this.currentShape.length; row++) {
+      for (let col = 0; col < this.currentShape[row].length; col++) {
+        if (this.currentShape[row][col] === 1) {
+          const x = (col + this.x) * blockSize;
+          const y = (row + fallPreviewY) * blockSize;
+          this.drawSquare(x, y, blockSize, "rgba(255, 255, 255, 0.5)");
+        }
+      }
+    }
+
+    // テトリミノが画面上に到達したかをチェックし、ゲームオーバーとする
+    if (this.checkCollision(gameBoard, this.currentShape, this.x, this.y)) {
+      alert("gameover");
+      gameRunning = false;
+      console.log(gameRunning);
     }
   }
 
@@ -123,7 +214,7 @@ class TetoriminoBoard {
       this.adjustPosition(gameBoard);
     }
 
-    this.drawBlock();
+    this.drawBlock(gameBoard);
   }
 
   // テトリミノの位置をゲーム画面の枠内に調整
@@ -248,6 +339,21 @@ class TetoriminoBoard {
     }
     return false; // 衝突なし
   }
+
+  getFallPreviewPosition(gameBoard) {
+    let fallPreviewY = this.y;
+    while (
+      !this.checkCollision(
+        gameBoard,
+        this.currentShape,
+        this.x,
+        fallPreviewY + 1
+      )
+    ) {
+      fallPreviewY++;
+    }
+    return fallPreviewY;
+  }
 }
 
 // ゲームボードを表示するためのクラス
@@ -305,7 +411,7 @@ class GameBoard {
     }
   }
 
-  mergeBlock(tetoriminoBoard) {
+  mergeBlock(tetoriminoBoard, gameBoard) {
     const shape = tetoriminoBoard.currentShape;
     const x = tetoriminoBoard.x;
     const y = tetoriminoBoard.y;
@@ -357,40 +463,8 @@ class GameBoard {
   }
 }
 
-// ゲームの開始
-const startGame = () => {
-  const gameBoard = new GameBoard();
-  const tetoriminoBoard = new TetoriminoBoard();
-
-  gameBoard.drawGameArea(tetoriminoBoard);
-  tetoriminoBoard.drawRandomBlock();
-
-  // キー入力のリスナーを追加
-  window.addEventListener("keydown", (event) => {
-    tetoriminoBoard.handleKeyPress(event, gameBoard);
-  });
-
-  // ゲームループの実行
-  function gameLoop() {
-    if (
-      tetoriminoBoard.checkCollision(
-        gameBoard,
-        tetoriminoBoard.currentShape,
-        tetoriminoBoard.x,
-        tetoriminoBoard.y + 1
-      )
-    ) {
-      // テトリミノをゲームボードにマージ
-      gameBoard.mergeBlock(tetoriminoBoard);
-      gameBoard.drawGameArea(tetoriminoBoard);
-    }
-    tetoriminoBoard.drawBlock();
-    requestAnimationFrame(gameLoop);
-  }
-
-  // ゲームループを開始
-  gameLoop();
-};
-
 // ゲームを開始する
-startGame();
+function startGame() {
+  const gameBoard = new GameBoard();
+  const tetoriminoBoard = new TetoriminoBoard(gameBoard);
+}
