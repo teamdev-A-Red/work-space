@@ -1,16 +1,22 @@
 const config = {
+  startBtn: document.getElementById("start_btn"),
   initialPage: document.getElementById("initialPage"),
   mainPage: document.getElementById("mainPage"),
+  finalPage: document.getElementById("finalPage"),
   move: document.getElementById("move"),
   rotate: document.getElementById("rotate"),
   pauseBtn: document.getElementById("pause_btn"),
+  resetBtn: document.getElementById("reset_btn"),
   bgm: document.getElementById("background_mp3"),
+  quitBtn: document.getElementById("quit_btn"),
+  restartBtn: document.getElementById("restart_btn"),
 
   // ページ切り替え
   switchPages: function switchPages(page1, page2) {
     page1.style.display = "none";
     page2.style.display = "block";
   },
+
 };
 
 // ブロックの色の定義
@@ -208,9 +214,21 @@ class TetoriminoBoard {
 
     // テトリミノが画面上に到達したかをチェックし、ゲームオーバーとする
     if (this.checkCollision(gameBoard, this.currentShape, this.x, this.y)) {
-      alert("gameover");
+      this.overLayPages(config.mainPage, config.finalPage);
+      // alert("gameover");
       gameRunning = false;
       console.log(gameRunning);
+    }
+  }
+
+  // ゲームオーバー画面に切り替える
+  overLayPages(page1, page2) {  // ページを重ねて表示
+    if (page1.style.display == "block") {
+      //page1.style.display = "flex";
+      page2.style.display = "flex";
+    } else {
+      page1.style.display = "none";
+      page2.style.display = "none";
     }
   }
 
@@ -499,3 +517,16 @@ function startGame() {
   const gameBoard = new GameBoard();
   const tetoriminoBoard = new TetoriminoBoard(gameBoard);
 }
+
+config.startBtn.addEventListener("click", function () {
+  startGame();
+})
+
+config.resetBtn.addEventListener("click", function () {
+  // ページを再ロード
+  location.reload();
+})
+config.quitBtn.addEventListener("click", function () {
+  // ページを再ロード
+  location.reload();
+})

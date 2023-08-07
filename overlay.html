@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Overlay Example</title>
+    <style>
+        /* 共通のスタイル */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* mainPageスタイル */
+        #mainPage {
+            z-index: 1;
+            background-color: rgba(255, 255, 255, 0.8);
+            /* 透明度80%の白 */
+        }
+
+        /* finalPageスタイル */
+        #finalPage {
+            z-index: 2;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* 透明度50%の黒 */
+        }
+
+        /* スタイルの調整や追加が必要な場合はここに追加してください */
+    </style>
+</head>
+
+<body>
+    <!-- mainPageのコンテンツ -->
+    <div id="mainPage" class="overlay">
+        <!-- ... mainPageのコンテンツ ... -->
+    </div>
+
+    <!-- finalPageのコンテンツ -->
+    <div id="finalPage" class="overlay">
+        <!-- ... finalPageのコンテンツ ... -->
+    </div>
+
+    <!-- 切り替えボタン -->
+    <button id="toggleButton">Toggle Overlay</button>
+
+    <script>
+        var toggleButton = document.getElementById("toggleButton");
+        var mainPage = document.getElementById("mainPage");
+        var finalPage = document.getElementById("finalPage");
+
+        toggleButton.addEventListener("click", function () {
+            // ページの重ね合わせを切り替え
+            if (mainPage.style.display === "none") {
+                mainPage.style.display = "flex";
+                finalPage.style.display = "flex";
+            } else {
+                mainPage.style.display = "none";
+                finalPage.style.display = "none";
+            }
+        });
+    </script>
+</body>
+
+</html>
