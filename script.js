@@ -1,3 +1,8 @@
+const config = {
+  initialPage: document.getElementById("initialPage"),
+  mainPage: document.getElementById("mainPage"),
+}
+
 // ブロックの色の定義
 const COLORS = {
   1: "#FF0000", // Red
@@ -56,6 +61,9 @@ class TetoriminoBoard {
     this.setupCanvas();
     this.setupInitialPosition();
     this.drawRandomBlock();
+    // 操作音関連
+    //this.move = document.getElementById('move');
+    this.rotate = document.getElementById('rotate');
     this.startGame();
   }
 
@@ -273,6 +281,7 @@ class TetoriminoBoard {
       !this.checkCollision(gameBoard, this.currentShape, this.x + 1, this.y)
     ) {
       this.x++;
+      //document.getElementById('move').play();
     }
   }
 
@@ -283,6 +292,7 @@ class TetoriminoBoard {
       !this.checkCollision(gameBoard, this.currentShape, this.x, this.y + 1)
     ) {
       this.y++;
+      //document.getElementById('move').play();
     }
   }
 
@@ -293,6 +303,7 @@ class TetoriminoBoard {
       !this.checkCollision(gameBoard, this.currentShape, this.x - 1, this.y)
     ) {
       this.x--;
+      //document.getElementById('move').play();
     }
   }
 
@@ -300,15 +311,19 @@ class TetoriminoBoard {
   handleKeyPress(event, gameBoard) {
     switch (event.keyCode) {
       case 37: // 左矢印キー
+        //this.move.play();
         this.moveLeft(gameBoard);
         break;
       case 38: // 上矢印キー
+        this.rotate.play();
         this.rotateBlock(gameBoard);
         break;
       case 39: // 右矢印キー
+        //this.move.play();
         this.moveRight(gameBoard);
         break;
       case 40: // 下矢印キー
+        //this.move.play();
         this.moveDown(gameBoard);
         break;
     }
@@ -438,6 +453,83 @@ class GameBoard {
     tetoriminoBoard.drawRandomBlock();
     tetoriminoBoard.setupInitialPosition();
   }
+}
+
+// bgmはクラスにして処理したい
+class BackgroundMp3 {
+  constructor() {
+    this.poseBtn = document.getElementById("pose_btn")
+    this.bgm = document.getElementById('background_mp3');
+    this.paused = false;
+    this.play();
+  }
+
+  play() {
+    this.bgm.play();
+    this.bgm.loop = true;
+    this.paused = false;
+  }
+
+  pause() {
+    this.bgm.pause();
+    this.paused = true;
+  }
+
+  toggle() {
+    if (this.paused) {
+      this.play(); // BGMを流し始める
+      this.poseBtn.innerHTML = "ポーズ";
+    } else {
+      this.pause(); // BGMを一時停止
+      this.poseBtn.innerHTML = "再開";
+    }
+  }
+}
+
+// ページ切り替え
+function switchPages(page1, page2) {
+  page1.style.display = "none";
+  page2.style.display = "block";
+}
+
+// ゲームの開始だ
+const startGame = () => {
+  var initialPage = document.getElementById("initialPage");
+  var mainPage = document.getElementById("mainPage");
+  switchPages(initialPage, mainPage);
+
+  const bgm = new BackgroundMp3();
+
+  const gameBoard = new GameBoard();
+  const tetoriminoBoard = new TetoriminoBoard();
+
+  gameBoard.drawGameArea(tetoriminoBoard);
+  tetoriminoBoard.drawRandomBlock();
+
+  // キー入力のリスナーを追加
+  window.addEventListener("keydown", (event) => {
+    tetoriminoBoard.handleKeyPress(event, gameBoard);
+  });
+
+  // ポーズボタンのクリックイベントリスナーを追加
+  const poseBtn = document.getElementById("pose_btn");
+  poseBtn.addEventListener("click", () => {
+    bgm.toggle(); // BGMの再生と停止を切り替える
+  });
+
+  // ゲームループの実行
+  function gameLoop() {
+    if (
+      tetoriminoBoard.checkCollision(
+        gameBoard,
+        tetoriminoBoard.currentShape,
+        tetoriminoBoard.x,
+        tetoriminoBoard.y + 1
+      )
+    ) {
+      // テトリミノをゲームボードにマージ
+      gameBoard.mergeBlock(tetoriminoBoard);
+      gameBoard.drawGameArea(tetoriminoBoard);
 
   // 横一列が揃ったかどうかをチェックし、揃った行を削除
   checkAndClearLines() {
@@ -468,3 +560,4 @@ function startGame() {
   const gameBoard = new GameBoard();
   const tetoriminoBoard = new TetoriminoBoard(gameBoard);
 }
+

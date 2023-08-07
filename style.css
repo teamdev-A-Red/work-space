@@ -58,13 +58,43 @@
   padding: 20px;
 }
 
-.container {
+
+/*
+.canvasField {
   position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+*/
 
 #game,
 #tetorimino {
   position: absolute;
-  top: 0;
-  left: 300px;
 }
+
+.contains {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+/*
+.holdField {
+  display: flex;
+  flex-direction: column;
+}
+
+.scoreField {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.buttonField {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+*/
