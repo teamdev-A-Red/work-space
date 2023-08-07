@@ -135,7 +135,7 @@ class TetoriminoBoard {
       // キー入力のリスナーを追加
       window.addEventListener("keydown", (event) => {
         if (!isPaused) {
-          this.handleKeyPress(event, this.gameBoard);
+          handleKeyPress(event, tetoriminoBoard, gameBoard);
         }
       });
     }
@@ -214,15 +214,7 @@ class TetoriminoBoard {
 
     // テトリミノが画面上に到達したかをチェックし、ゲームオーバーとする
     if (this.checkCollision(gameBoard, this.currentShape, this.x, this.y)) {
-      alert("gameover");
-      gameRunning = false;
-
-      // スコアがベストスコアより高い場合はベストスコアを更新する
-      if (gameBoard.score > gameBoard.bestScore) {
-        gameBoard.bestScore = gameBoard.score;
-        gameBoard.updateBestScoreDisplay();
-      }
-      resetGame(gameBoard, this);
+      handleGameOver(gameBoard);
     }
   }
 
@@ -332,28 +324,6 @@ class TetoriminoBoard {
       !this.checkCollision(gameBoard, this.currentShape, this.x - 1, this.y)
     ) {
       this.x--;
-    }
-  }
-
-  // キー入力の処理
-  handleKeyPress(event, gameBoard) {
-    switch (event.keyCode) {
-      case 37: // 左矢印キー
-        config.move.play();
-        this.moveLeft(gameBoard);
-        break;
-      case 38: // 上矢印キー
-        config.rotate.play();
-        this.rotateBlock(gameBoard);
-        break;
-      case 39: // 右矢印キー
-        config.move.play();
-        this.moveRight(gameBoard);
-        break;
-      case 40: // 下矢印キー
-        config.move.play();
-        this.moveDown(gameBoard);
-        break;
     }
   }
 
@@ -545,14 +515,46 @@ function startGame() {
 // ゲームをリセットする
 function resetGame(gameBoard, tetoriminoBoard) {
   gameBoard.gameArea = gameBoard.createEmptyArea();
-  gameBoard.score = 0;
   gameBoard.updateScoreDisplay();
   tetoriminoBoard.drawRandomBlock();
   tetoriminoBoard.setupInitialPosition();
   gameBoard.drawGameArea(tetoriminoBoard);
-  gameBoard.bestScore = Math.max(gameBoard.score, gameBoard.bestScore);
-  gameBoard.updateBestScoreDisplay();
+  gameBoard.score = 0;
+  gameBoard.updateScoreDisplay();
   gameRunning = true;
+}
+
+// ゲームオーバーの処理
+function handleGameOver(gameBoard) {
+  alert("gameover");
+  gameRunning = false;
+  if (gameBoard.score > gameBoard.bestScore) {
+    gameBoard.bestScore = gameBoard.score;
+    gameBoard.updateBestScoreDisplay();
+  }
+  resetGame(gameBoard, tetoriminoBoard);
+}
+
+// キー入力の処理
+function handleKeyPress(event, tetoriminoBoard, gameBoard) {
+  switch (event.keyCode) {
+    case 37: // 左矢印キー
+      config.move.play();
+      tetoriminoBoard.moveLeft(gameBoard);
+      break;
+    case 38: // 上矢印キー
+      config.rotate.play();
+      tetoriminoBoard.rotateBlock(gameBoard);
+      break;
+    case 39: // 右矢印キー
+      config.move.play();
+      tetoriminoBoard.moveRight(gameBoard);
+      break;
+    case 40: // 下矢印キー
+      config.move.play();
+      tetoriminoBoard.moveDown(gameBoard);
+      break;
+  }
 }
 
 config.startBtn.addEventListener("click", function () {
