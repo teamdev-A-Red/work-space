@@ -61,7 +61,7 @@ let tetoriminoBoard;
 let gameRunning = true;
 let isPaused = false; // ポーズ状態を管理するフラグ
 let autoMoveInterval;
-const AUTO_MOVE_INTERVAL = 500;
+const AUTO_MOVE_INTERVAL = 500; // 自動でテトリミノを下に移動する間隔（ミリ秒）
 
 // テトリミノを表示するためのクラス
 class TetoriminoBoard {
@@ -111,7 +111,6 @@ class TetoriminoBoard {
   }
 
   initializeGameLoop() {
-    // 自動でテトリミノを下に移動する間隔（ミリ秒）
     if (gameRunning && !isPaused) {
       config.bgm.play();
       config.bgm.loop = true;
@@ -463,7 +462,7 @@ class GameBoard {
       this.score += this.calculateScore(linesCleared);
       this.updateScoreDisplay();
 
-      // 初回の行をクリアした後、追加のクリア行があるか再帰的にチェックします
+      // 初回の行をクリアした後、追加のクリア行があるか再帰的にチェック
       this.checkAndClearLines();
     }
 
