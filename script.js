@@ -1,9 +1,11 @@
 const config = {
   startBtn: document.getElementById("start_btn"),
+  resetBtn: document.getElementById("reset_btn"),
   initialPage: document.getElementById("initialPage"),
   mainPage: document.getElementById("mainPage"),
   pauseBtn: document.getElementById("pause_btn"),
   score: document.getElementById("score"),
+  bestScore: document.getElementById("best-score"),
   move: document.getElementById("move"),
   rotate: document.getElementById("rotate"),
   pauseBtn: document.getElementById("pause_btn"),
@@ -55,6 +57,8 @@ const SHAPES = {
   ],
 };
 
+let gameBoard;
+let tetoriminoBoard;
 let gameRunning = true;
 let isPaused = false; // ポーズ状態を管理するフラグ
 
@@ -212,7 +216,13 @@ class TetoriminoBoard {
     if (this.checkCollision(gameBoard, this.currentShape, this.x, this.y)) {
       alert("gameover");
       gameRunning = false;
-      console.log(gameRunning);
+
+      // スコアがベストスコアより高い場合はベストスコアを更新する
+      if (gameBoard.score > gameBoard.bestScore) {
+        gameBoard.bestScore = gameBoard.score;
+        gameBoard.updateBestScoreDisplay();
+      }
+      resetGame(gameBoard, this);
     }
   }
 
@@ -402,6 +412,7 @@ class GameBoard {
     this.setupCanvas();
     this.gameArea = this.createEmptyArea();
     this.score = 0;
+    this.bestScore = 0;
   }
 
   // キャンバスのセットアップ
@@ -518,14 +529,36 @@ class GameBoard {
   updateScoreDisplay() {
     config.score.textContent = `${this.score}`;
   }
+
+  // ページ上のベストスコア表示要素を更新する
+  updateBestScoreDisplay() {
+    config.bestScore.textContent = `${this.bestScore}`;
+  }
 }
 
 // ゲームを開始する
 function startGame() {
-  const gameBoard = new GameBoard();
-  const tetoriminoBoard = new TetoriminoBoard(gameBoard);
+  gameBoard = new GameBoard();
+  tetoriminoBoard = new TetoriminoBoard(gameBoard);
+}
+
+// ゲームをリセットする
+function resetGame(gameBoard, tetoriminoBoard) {
+  gameBoard.gameArea = gameBoard.createEmptyArea();
+  gameBoard.score = 0;
+  gameBoard.updateScoreDisplay();
+  tetoriminoBoard.drawRandomBlock();
+  tetoriminoBoard.setupInitialPosition();
+  gameBoard.drawGameArea(tetoriminoBoard);
+  gameBoard.bestScore = Math.max(gameBoard.score, gameBoard.bestScore);
+  gameBoard.updateBestScoreDisplay();
+  gameRunning = true;
 }
 
 config.startBtn.addEventListener("click", function () {
   startGame();
+});
+
+config.resetBtn.addEventListener("click", function () {
+  resetGame(gameBoard, tetoriminoBoard);
 });
