@@ -605,6 +605,8 @@ function resetGame(gameBoard, tetoriminoBoard) {
   tetoriminoBoard.initializeGameLoop();
   gameBoard.gameArea = gameBoard.createEmptyArea();
   gameBoard.updateScoreDisplay();
+  tetoriminoBoard.currentShape = tetoriminoBoard.getNextShape();
+  tetoriminoBoard.currentColor = tetoriminoBoard.getNextColor();
   tetoriminoBoard.drawNextBlock();
   tetoriminoBoard.setupInitialPosition();
   gameBoard.drawGameArea(tetoriminoBoard);
