@@ -61,14 +61,14 @@ const SHAPES = {
 
 let gameBoard;
 let tetoriminoBoard;
-let gameRunning = true;
+let gameRunning = true; // ゲームの状態を管理するフラグ
 let isPaused = false; // ポーズ状態を管理するフラグ
 let autoMoveInterval;
-const AUTO_MOVE_INTERVAL = 500;
+const AUTO_MOVE_INTERVAL = 500; //ブロックが落ちる間隔
 
 // テトリミノを表示するためのクラス
 class TetoriminoBoard {
-  constructor(gameBoard, shape, color) {
+  constructor(gameBoard) {
     this.gameBoard = gameBoard;
     this.cvs = document.getElementById("tetorimino");
     this.ctx = this.cvs.getContext("2d");
@@ -77,13 +77,17 @@ class TetoriminoBoard {
     this.blockSize = 30;
     this.canvasW = this.blockSize * this.boardCol;
     this.canvasH = this.blockSize * this.boardRow;
-    this.currentShape = shape;
-    this.color = color;
+    this.currentShape = this.getNextShape();
+    this.currentColor = this.getNextColor();
     this.move = config.move;
     this.rotate = config.rotate;
+    this.nextShape = null;
+    this.nextColor = null;
     this.setupCanvas();
     this.setupInitialPosition();
-    this.drawRandomBlock();
+    this.setupNextBlockCanvas();
+    this.drawNextBlock();
+    this.drawSquareNextBlock();
     this.startGame();
   }
 
@@ -167,18 +171,12 @@ class TetoriminoBoard {
 
   // ランダムなテトリミノを描画
   drawRandomBlock() {
-    const shapeKeys = Object.keys(SHAPES);
-    const randomShapeKey =
-      shapeKeys[Math.floor(Math.random() * shapeKeys.length)];
-    const randomShape = SHAPES[randomShapeKey];
-    const randomColor =
-      COLORS[Math.floor(Math.random() * Object.keys(COLORS).length) + 1];
-    this.currentShape = randomShape;
-    this.color = randomColor;
+    this.currentShape = this.nextShape;
+    this.currentColor = this.nextColor;
   }
 
   // テトリミノを描画
-  drawBlock(gameBoard) {
+  drawBlock() {
     this.clearCanvas();
     const blockSize = this.blockSize;
 
@@ -188,7 +186,7 @@ class TetoriminoBoard {
         if (this.currentShape[row][col] === 1) {
           const x = (col + this.x) * blockSize;
           const y = (row + this.y) * blockSize;
-          this.drawSquare(x, y, blockSize, this.color);
+          this.drawSquare(x, y, blockSize, this.currentColor);
         }
       }
     }
@@ -235,7 +233,7 @@ class TetoriminoBoard {
       this.adjustPosition(gameBoard);
     }
 
-    this.drawBlock(gameBoard);
+    this.drawBlock();
   }
 
   // テトリミノの位置をゲーム画面の枠内に調整
@@ -357,6 +355,65 @@ class TetoriminoBoard {
     }
     return fallPreviewY;
   }
+
+  // 次のブロックを表示するための canvas 要素をセットアップ
+  setupNextBlockCanvas() {
+    this.nextBlockCvs = document.getElementById("nextBlock");
+    this.nextBlockCtx = this.nextBlockCvs.getContext("2d");
+    this.nextBlockCvs.width = this.blockSize * 4; // ブロック4つ分の幅
+    this.nextBlockCvs.height = this.blockSize * 4; // ブロック4つ分の高さ
+    this.nextBlockCtx.strokeStyle = "rgba(0, 0, 0, 1)";
+  }
+
+  // 次のブロックを描画
+  drawNextBlock() {
+    this.nextBlockCtx.clearRect(
+      0,
+      0,
+      this.nextBlockCvs.width,
+      this.nextBlockCvs.height
+    );
+    const blockSize = this.blockSize;
+    const nextShape = this.getNextShape(); // 次のブロックの形状を取得
+    const nextColor = this.getNextColor(); // 次のブロックの色を取得
+
+    for (let row = 0; row < nextShape.length; row++) {
+      for (let col = 0; col < nextShape[row].length; col++) {
+        if (nextShape[row][col] === 1) {
+          const x = col * blockSize;
+          const y = row * blockSize;
+          this.drawSquareNextBlock(x, y, blockSize, nextColor);
+        }
+      }
+    }
+
+    this.nextShape = nextShape; // 次のブロックの形状を保持
+    this.nextColor = nextColor; // 次のブロックの色を保持
+  }
+
+  // 次のブロックの形状を取得
+  getNextShape() {
+    // ランダムなテトリミノの形状を返すロジックを実装
+    const shapeKeys = Object.keys(SHAPES);
+    const randomShapeKey =
+      shapeKeys[Math.floor(Math.random() * shapeKeys.length)];
+    return SHAPES[randomShapeKey];
+  }
+
+  // 次のブロックの色を取得
+  getNextColor() {
+    // ランダムな色を返すロジックを実装
+    const randomColor =
+      COLORS[Math.floor(Math.random() * Object.keys(COLORS).length) + 1];
+    return randomColor;
+  }
+
+  // 次のブロックを描画するための正方形を描画
+  drawSquareNextBlock(x, y, size, color) {
+    this.nextBlockCtx.fillStyle = color;
+    this.nextBlockCtx.fillRect(x, y, size, size);
+    this.nextBlockCtx.strokeRect(x, y, size, size);
+  }
 }
 
 // ゲームボードを表示するためのクラス
@@ -421,7 +478,7 @@ class GameBoard {
     const x = tetoriminoBoard.x;
     const y = tetoriminoBoard.y;
     const colorIndex = Object.keys(COLORS).find(
-      (key) => COLORS[key] === tetoriminoBoard.color
+      (key) => COLORS[key] === tetoriminoBoard.currentColor
     );
 
     for (let row = 0; row < shape.length; row++) {
@@ -446,6 +503,7 @@ class GameBoard {
 
     // 新しいテトリミノを生成し、初期位置を設定
     tetoriminoBoard.drawRandomBlock();
+    tetoriminoBoard.drawNextBlock();
     tetoriminoBoard.setupInitialPosition();
   }
 
@@ -464,7 +522,7 @@ class GameBoard {
       this.score += this.calculateScore(linesCleared);
       this.updateScoreDisplay();
 
-      // 初回の行をクリアした後、追加のクリア行があるか再帰的にチェックします
+      // 初回の行をクリアした後、追加のクリア行があるか再帰的にチェック
       this.checkAndClearLines();
     }
 
@@ -522,7 +580,7 @@ function runGameLoop(tetoriminoBoard, gameBoard) {
         gameBoard.mergeBlock(tetoriminoBoard, gameBoard);
         gameBoard.drawGameArea(tetoriminoBoard);
       }
-      tetoriminoBoard.drawBlock(gameBoard);
+      tetoriminoBoard.drawBlock();
       requestAnimationFrame(gameLoop);
     }
   };
@@ -540,7 +598,7 @@ function resetGame(gameBoard, tetoriminoBoard) {
   tetoriminoBoard.initializeGameLoop();
   gameBoard.gameArea = gameBoard.createEmptyArea();
   gameBoard.updateScoreDisplay();
-  tetoriminoBoard.drawRandomBlock();
+  tetoriminoBoard.drawNextBlock();
   tetoriminoBoard.setupInitialPosition();
   gameBoard.drawGameArea(tetoriminoBoard);
   gameBoard.score = 0;
