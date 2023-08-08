@@ -564,10 +564,15 @@ class GameBoard {
   }
 }
 
-// ゲームを開始する
-function startGame() {
+// ゲームを初期化する
+function initializeGame() {
   gameBoard = new GameBoard();
   tetoriminoBoard = new TetoriminoBoard(gameBoard);
+}
+
+// ゲームを開始する
+function startGame() {
+  initializeGame();
   runGameLoop(tetoriminoBoard, gameBoard);
 }
 
@@ -597,21 +602,24 @@ function runGameLoop(tetoriminoBoard, gameBoard) {
 }
 
 // ゲームをリセットする
-function resetGame(gameBoard, tetoriminoBoard) {
+function resetGame() {
   gameRunning = true;
   isPaused = false;
   config.pauseBtn.innerHTML = "ポーズ";
   clearInterval(autoMoveInterval);
+
+  // テトリミノボードをリセット
   tetoriminoBoard.initializeGameLoop();
-  gameBoard.gameArea = gameBoard.createEmptyArea();
-  gameBoard.updateScoreDisplay();
   tetoriminoBoard.currentShape = tetoriminoBoard.getNextShape();
   tetoriminoBoard.currentColor = tetoriminoBoard.getNextColor();
   tetoriminoBoard.drawNextBlock();
   tetoriminoBoard.setupInitialPosition();
-  gameBoard.drawGameArea(tetoriminoBoard);
+
+  // ゲームボードをリセット
+  gameBoard.gameArea = gameBoard.createEmptyArea();
   gameBoard.score = 0;
   gameBoard.updateScoreDisplay();
+  gameBoard.drawGameArea(tetoriminoBoard);
 }
 
 // ゲームオーバーのチェック
@@ -635,25 +643,23 @@ function handleGameOver(gameBoard) {
   }
 }
 
+// キーコードと処理の対応を定義
+const keyActions = {
+  37: () => tetoriminoBoard.moveLeft(gameBoard), //左方向
+  38: () => {
+    config.rotate.play();
+    tetoriminoBoard.rotateBlock(gameBoard); //右回転
+  },
+  39: () => tetoriminoBoard.moveRight(gameBoard), //右方向
+  40: () => tetoriminoBoard.moveDown(gameBoard), //下方向
+};
+
 // キー入力の処理
-function handleKeyPress(event, tetoriminoBoard, gameBoard) {
-  switch (event.keyCode) {
-    case 37: // 左矢印キー
-      config.move.play();
-      tetoriminoBoard.moveLeft(gameBoard);
-      break;
-    case 38: // 上矢印キー
-      config.rotate.play();
-      tetoriminoBoard.rotateBlock(gameBoard);
-      break;
-    case 39: // 右矢印キー
-      config.move.play();
-      tetoriminoBoard.moveRight(gameBoard);
-      break;
-    case 40: // 下矢印キー
-      config.move.play();
-      tetoriminoBoard.moveDown(gameBoard);
-      break;
+function handleKeyPress(event) {
+  const action = keyActions[event.keyCode];
+  if (action && !isPaused) {
+    config.move.play();
+    action();
   }
 }
 
