@@ -3,6 +3,7 @@ const config = {
   resetBtn: document.getElementById("reset_btn"),
   initialPage: document.getElementById("initialPage"),
   mainPage: document.getElementById("mainPage"),
+  finalPage: document.getElementById("finalPage"),
   pauseBtn: document.getElementById("pause_btn"),
   score: document.getElementById("score"),
   bestScore: document.getElementById("best-score"),
@@ -10,14 +11,13 @@ const config = {
   rotate: document.getElementById("rotate"),
   bgm: document.getElementById("background_mp3"),
   quitBtn: document.getElementById("quit_btn"),
-  restartBtn: document.getElementById("restart_btn"),
+  replayBtn: document.getElementById("replay_btn"),
 
   // ページ切り替え
   switchPages: function switchPages(page1, page2) {
     page1.style.display = "none";
     page2.style.display = "block";
   },
-
 };
 
 // ブロックの色の定義
@@ -64,7 +64,7 @@ let tetoriminoBoard;
 let gameRunning = true;
 let isPaused = false; // ポーズ状態を管理するフラグ
 let autoMoveInterval;
-const AUTO_MOVE_INTERVAL = 500; // 自動でテトリミノを下に移動する間隔（ミリ秒）
+const AUTO_MOVE_INTERVAL = 500;
 
 // テトリミノを表示するためのクラス
 class TetoriminoBoard {
@@ -114,6 +114,7 @@ class TetoriminoBoard {
   }
 
   initializeGameLoop() {
+    // 自動でテトリミノを下に移動する間隔（ミリ秒）
     if (gameRunning && !isPaused) {
       config.bgm.play();
       config.bgm.loop = true;
@@ -208,22 +209,7 @@ class TetoriminoBoard {
 
     // テトリミノが画面上に到達したかをチェックし、ゲームオーバーとする
     if (this.checkCollision(gameBoard, this.currentShape, this.x, this.y)) {
-      // this.overLayPages(config.mainPage, config.finalPage);
-      config.switchPages(config.mainPage, config.finalPage);
-      // alert("gameover");
-      gameRunning = false;
-      console.log(gameRunning);
       handleGameOver(gameBoard);
-    }
-  }
-
-  // ゲームオーバー画面に切り替える
-  overLayPages(page1, page2) {  // ページを重ねて表示
-    if (page1.style.display == "block") {
-      page2.style.display = "block";
-    } else {
-      page1.style.display = "none";
-      page2.style.display = "none";
     }
   }
 
@@ -480,7 +466,7 @@ class GameBoard {
       this.score += this.calculateScore(linesCleared);
       this.updateScoreDisplay();
 
-      // 初回の行をクリアした後、追加のクリア行があるか再帰的にチェック
+      // 初回の行をクリアした後、追加のクリア行があるか再帰的にチェックします
       this.checkAndClearLines();
     }
 
@@ -550,39 +536,32 @@ function runGameLoop(tetoriminoBoard, gameBoard) {
 
 // ゲームをリセットする
 function resetGame(gameBoard, tetoriminoBoard) {
+  gameRunning = true;
+  isPaused = false;
+  config.pauseBtn.innerHTML = "ポーズ";
+  //tetoriminoBoard.togglePause();
+  tetoriminoBoard.initializeGameLoop();
   gameBoard.gameArea = gameBoard.createEmptyArea();
   gameBoard.updateScoreDisplay();
   tetoriminoBoard.drawRandomBlock();
   tetoriminoBoard.setupInitialPosition();
   gameBoard.drawGameArea(tetoriminoBoard);
+
   gameBoard.score = 0;
   gameBoard.updateScoreDisplay();
-  gameRunning = true;
-  tetoriminoBoard.isPaused = false;
+
 }
-
-config.startBtn.addEventListener("click", function () {
-  startGame();
-})
-
-config.resetBtn.addEventListener("click", function () {
-  // ページを再ロード
-  location.reload();
-})
-config.quitBtn.addEventListener("click", function () {
-  // ページを再ロード
-  location.reload();
-})
 
 // ゲームオーバーの処理
 function handleGameOver(gameBoard) {
-  alert("gameover");
+  //alert("gameover");
+  config.switchPages(config.mainPage, config.finalPage);
   gameRunning = false;
   if (gameBoard.score > gameBoard.bestScore) {
     gameBoard.bestScore = gameBoard.score;
     gameBoard.updateBestScoreDisplay();
   }
-  resetGame(gameBoard, tetoriminoBoard);
+  // resetGame(gameBoard, tetoriminoBoard);
 }
 
 // キー入力の処理
@@ -614,3 +593,14 @@ config.startBtn.addEventListener("click", function () {
 config.resetBtn.addEventListener("click", function () {
   resetGame(gameBoard, tetoriminoBoard);
 });
+
+config.quitBtn.addEventListener("click", function () {
+  // ページを再ロード
+  location.reload();
+})
+
+config.replayBtn.addEventListener("click", function () {
+  // リスタート関数を実行
+  config.switchPages(config.finalPage, config.mainPage);
+  resetGame(gameBoard, tetoriminoBoard);
+})
