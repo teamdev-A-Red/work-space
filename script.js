@@ -539,17 +539,15 @@ function resetGame(gameBoard, tetoriminoBoard) {
   gameRunning = true;
   isPaused = false;
   config.pauseBtn.innerHTML = "ポーズ";
-  //tetoriminoBoard.togglePause();
+  clearInterval(autoMoveInterval);
   tetoriminoBoard.initializeGameLoop();
   gameBoard.gameArea = gameBoard.createEmptyArea();
   gameBoard.updateScoreDisplay();
   tetoriminoBoard.drawRandomBlock();
   tetoriminoBoard.setupInitialPosition();
   gameBoard.drawGameArea(tetoriminoBoard);
-
   gameBoard.score = 0;
   gameBoard.updateScoreDisplay();
-
 }
 
 // ゲームオーバーの処理
@@ -597,10 +595,10 @@ config.resetBtn.addEventListener("click", function () {
 config.quitBtn.addEventListener("click", function () {
   // ページを再ロード
   location.reload();
-})
+});
 
 config.replayBtn.addEventListener("click", function () {
   // リスタート関数を実行
   config.switchPages(config.finalPage, config.mainPage);
   resetGame(gameBoard, tetoriminoBoard);
-})
+});
