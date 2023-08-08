@@ -101,7 +101,7 @@ class TetoriminoBoard {
 
   // テトリミノの初期位置のセットアップ
   setupInitialPosition() {
-    this.x = 4;
+    this.x = Math.floor((this.boardCol - this.currentShape[0].length) / 2);
     this.y = 0;
   }
 
@@ -362,6 +362,7 @@ class TetoriminoBoard {
     this.nextBlockCtx = this.nextBlockCvs.getContext("2d");
     this.nextBlockCvs.width = this.blockSize * 4; // ブロック4つ分の幅
     this.nextBlockCvs.height = this.blockSize * 4; // ブロック4つ分の高さ
+    this.nextBlockCvs.style.margin = "0 auto";
     this.nextBlockCtx.strokeStyle = "rgba(0, 0, 0, 1)";
   }
 
@@ -377,11 +378,17 @@ class TetoriminoBoard {
     const nextShape = this.getNextShape(); // 次のブロックの形状を取得
     const nextColor = this.getNextColor(); // 次のブロックの色を取得
 
+    // ブロックの描画位置を調整
+    const xOffset =
+      (this.nextBlockCvs.width - nextShape[0].length * blockSize) / 2;
+    const yOffset =
+      (this.nextBlockCvs.height - nextShape.length * blockSize) / 2;
+
     for (let row = 0; row < nextShape.length; row++) {
       for (let col = 0; col < nextShape[row].length; col++) {
         if (nextShape[row][col] === 1) {
-          const x = col * blockSize;
-          const y = row * blockSize;
+          const x = xOffset + col * blockSize;
+          const y = yOffset + row * blockSize;
           this.drawSquareNextBlock(x, y, blockSize, nextColor);
         }
       }
