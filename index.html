@@ -75,6 +75,34 @@
           <button id="start_btn">
             <h3>ゲームスタート</h3>
           </button>
+  <body>
+    <!--スタート画面-->
+    <div id="initialPage">
+      <!-- スタートアイコン及びスタートボタンの中央配置-->
+      <div
+        class="vh-100 bg-info d-flex justify-content-center align-items-center"
+      >
+        <!-- 縦方向のカラム並べで綺麗に作成-->
+        <div
+          class="d-flex flex-column justify-content-center align-items-center text-center"
+        >
+          <!-- その1 : テトリスアイコンの表示-->
+          <div
+            class="d-flex justify-content-center align-items-center m-4 p-4 border rounded border-dark"
+          >
+            <h1 class="title-text text-white">T</h1>
+            <h1 class="title-text text-white">E</h1>
+            <h1 class="title-text text-white">T</h1>
+            <h1 class="title-text text-white">R</h1>
+            <h1 class="title-text text-white">I</h1>
+            <h1 class="title-text text-white">S</h1>
+          </div>
+          <!-- その2 : ゲームスタートボタンの作成 -->
+          <div class="d-flex justify-content-center border border-dark rounded">
+            <button id="start_btn">
+              <h3>ゲームスタート</h3>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -100,7 +128,6 @@
           <canvas id="nextTetorimino"></canvas>
         </div>
       </div>
-
       <!-- canvasフィールド-->
       <div class="canvasField d-flex justify-content-center align-items-center">
         <canvas id="game"></canvas>
