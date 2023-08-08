@@ -200,7 +200,8 @@ class TetoriminoBoard {
         if (this.currentShape[row][col] === 1) {
           const x = (col + this.x) * blockSize;
           const y = (row + fallPreviewY) * blockSize;
-          this.drawSquare(x, y, blockSize, "rgba(255, 255, 255, 0.5)");
+          const opacity = 0.5;
+          this.drawSquare(x, y, blockSize, this.currentColor, opacity);
         }
       }
     }
@@ -212,8 +213,9 @@ class TetoriminoBoard {
   }
 
   // 正方形を描画
-  drawSquare(x, y, size, color) {
+  drawSquare(x, y, size, color, opacity = 1) {
     this.ctx.fillStyle = color;
+    this.ctx.globalAlpha = opacity;
     this.ctx.fillRect(x, y, size, size);
     this.ctx.strokeRect(x, y, size, size);
   }
