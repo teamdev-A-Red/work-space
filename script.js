@@ -452,17 +452,15 @@ class GameBoard {
   // 横一列が揃ったかどうかをチェックし、揃った行を削除
   checkAndClearLines() {
     let linesCleared = 0;
-    let rowsToClear = [];
 
     for (let row = this.gameArea.length - 1; row >= 0; row--) {
       if (this.isLineFull(row)) {
-        rowsToClear.push(row);
+        this.clearLines(row);
         linesCleared++;
       }
     }
 
     if (linesCleared > 0) {
-      rowsToClear.forEach((row) => this.clearLines(row));
       this.score += this.calculateScore(linesCleared);
       this.updateScoreDisplay();
 
