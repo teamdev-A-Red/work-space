@@ -70,6 +70,17 @@
           <h1 class="title-text text-white large-text">I</h1>
           <h1 class="title-text text-white large-text">S</h1>
         </div>
+        <!-- 難易度調整ラジオボタンの作成-->
+        <div class="d-flex flex-column justify-content-center align-items-center p-3">
+          <div>
+            <h1>難易度</h1>
+          </div>
+          <select id="difficultyOption">
+            <option value=500 selected>初級</option>
+            <option value=300>中級</option>
+            <option value=200>上級</option>
+          </select>
+        </div>
         <!-- その2 : ゲームスタートボタンの作成 -->
         <div class="d-flex justify-content-center border border-dark rounded">
           <button id="start_btn">
@@ -78,6 +89,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 
   <div id="mainPage" style="display: none" class="overlay">
@@ -101,6 +113,11 @@
           <h1>Next</h1>
           <canvas id="nextTetorimino"></canvas>
         </div>
+        <!-- 音量調整スクロール-->
+        <div class="d-flex justify-content-center align-items-centet ">
+          <img src="icon/volume.jpeg">
+          <input type="range" id="volume" value="0.1" min="0.0" max="0.6" step="0.1" style="width: 80%">
+        </div>
       </div>
 
       <!-- canvasフィールド-->
@@ -110,6 +127,7 @@
         <canvas id="tetorimino"></canvas>
         <!-- テトリミノ表示ゲーム画面-->
       </div>
+
     </div>
   </div>
 
