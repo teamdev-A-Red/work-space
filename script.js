@@ -206,11 +206,6 @@ class TetoriminoBoard {
         }
       }
     }
-
-    // テトリミノが画面上に到達したかをチェックし、ゲームオーバーとする
-    if (this.checkCollision(gameBoard, this.currentShape, this.x, this.y)) {
-      handleGameOver(gameBoard);
-    }
   }
 
   // キャンバスをクリア
@@ -441,6 +436,11 @@ class GameBoard {
       }
     }
 
+    // テトリミノが画面上に到達したかをチェックし、ゲームオーバーとする
+    if (checkGameOver(gameBoard)) {
+      handleGameOver(gameBoard);
+    }
+
     // 横一列が揃ったかどうかをチェックし、揃った行を削除
     this.checkAndClearLines();
 
@@ -522,7 +522,6 @@ function runGameLoop(tetoriminoBoard, gameBoard) {
         gameBoard.mergeBlock(tetoriminoBoard, gameBoard);
         gameBoard.drawGameArea(tetoriminoBoard);
       }
-
       tetoriminoBoard.drawBlock(gameBoard);
       requestAnimationFrame(gameLoop);
     }
@@ -548,16 +547,25 @@ function resetGame(gameBoard, tetoriminoBoard) {
   gameBoard.updateScoreDisplay();
 }
 
+// ゲームオーバーのチェック
+function checkGameOver(gameBoard) {
+  // マージされたテトリミノの一番上の行をチェック
+  for (let col = 0; col < gameBoard.boardCol; col++) {
+    if (gameBoard.gameArea[0][col] !== 0) {
+      return true; // ゲームオーバー
+    }
+  }
+  return false; // ゲーム続行
+}
+
 // ゲームオーバーの処理
 function handleGameOver(gameBoard) {
-  //alert("gameover");
   config.switchPages(config.mainPage, config.finalPage);
   gameRunning = false;
   if (gameBoard.score > gameBoard.bestScore) {
     gameBoard.bestScore = gameBoard.score;
     gameBoard.updateBestScoreDisplay();
   }
-  // resetGame(gameBoard, tetoriminoBoard);
 }
 
 // キー入力の処理
