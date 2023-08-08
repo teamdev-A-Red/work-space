@@ -79,22 +79,5 @@
   justify-content: space-around;
   align-items: center;
 }
-/*
-.holdField {
-  display: flex;
-  flex-direction: column;
-}
-
-.scoreField {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 
 
-.buttonField {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-*/

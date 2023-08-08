@@ -9,12 +9,15 @@ const config = {
   move: document.getElementById("move"),
   rotate: document.getElementById("rotate"),
   bgm: document.getElementById("background_mp3"),
+  quitBtn: document.getElementById("quit_btn"),
+  restartBtn: document.getElementById("restart_btn"),
 
   // ページ切り替え
   switchPages: function switchPages(page1, page2) {
     page1.style.display = "none";
     page2.style.display = "block";
   },
+
 };
 
 // ブロックの色の定義
@@ -205,7 +208,22 @@ class TetoriminoBoard {
 
     // テトリミノが画面上に到達したかをチェックし、ゲームオーバーとする
     if (this.checkCollision(gameBoard, this.currentShape, this.x, this.y)) {
+      // this.overLayPages(config.mainPage, config.finalPage);
+      config.switchPages(config.mainPage, config.finalPage);
+      // alert("gameover");
+      gameRunning = false;
+      console.log(gameRunning);
       handleGameOver(gameBoard);
+    }
+  }
+
+  // ゲームオーバー画面に切り替える
+  overLayPages(page1, page2) {  // ページを重ねて表示
+    if (page1.style.display == "block") {
+      page2.style.display = "block";
+    } else {
+      page1.style.display = "none";
+      page2.style.display = "none";
     }
   }
 
@@ -542,6 +560,19 @@ function resetGame(gameBoard, tetoriminoBoard) {
   gameRunning = true;
   tetoriminoBoard.isPaused = false;
 }
+
+config.startBtn.addEventListener("click", function () {
+  startGame();
+})
+
+config.resetBtn.addEventListener("click", function () {
+  // ページを再ロード
+  location.reload();
+})
+config.quitBtn.addEventListener("click", function () {
+  // ページを再ロード
+  location.reload();
+})
 
 // ゲームオーバーの処理
 function handleGameOver(gameBoard) {
