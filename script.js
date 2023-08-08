@@ -214,7 +214,8 @@ class TetoriminoBoard {
 
     // テトリミノが画面上に到達したかをチェックし、ゲームオーバーとする
     if (this.checkCollision(gameBoard, this.currentShape, this.x, this.y)) {
-      this.overLayPages(config.mainPage, config.finalPage);
+      // this.overLayPages(config.mainPage, config.finalPage);
+      config.switchPages(config.mainPage, config.finalPage);
       // alert("gameover");
       gameRunning = false;
       console.log(gameRunning);
@@ -224,8 +225,7 @@ class TetoriminoBoard {
   // ゲームオーバー画面に切り替える
   overLayPages(page1, page2) {  // ページを重ねて表示
     if (page1.style.display == "block") {
-      //page1.style.display = "flex";
-      page2.style.display = "flex";
+      page2.style.display = "block";
     } else {
       page1.style.display = "none";
       page2.style.display = "none";
