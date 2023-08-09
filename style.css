@@ -58,7 +58,6 @@
   padding: 20px;
 }
 
-
 /*
 .canvasField {
   position: relative;
@@ -74,10 +73,13 @@
   position: absolute;
 }
 
+#nextBlock {
+  border: 2px solid #000;
+  background-color: #000;
+}
+
 .contains {
   display: flex;
   justify-content: space-around;
   align-items: center;
 }
-
-
