@@ -19,7 +19,6 @@ const config = {
     page1.style.display = "none";
     page2.style.display = "block";
   },
-
 };
 
 // ブロックの色の定義
@@ -61,7 +60,6 @@ const SHAPES = {
   ],
 };
 
-
 let gameBoard;
 let tetoriminoBoard;
 let gameRunning = true; // ゲームの状態を管理するフラグ
@@ -76,7 +74,7 @@ class TetoriminoBoard {
     this.ctx = this.cvs.getContext("2d");
     this.boardRow = 20;
     this.boardCol = 10;
-    this.blockSize = 30;
+    this.blockSize = 28;
     this.canvasW = this.blockSize * this.boardCol;
     this.canvasH = this.blockSize * this.boardRow;
     this.currentShape = this.getNextShape();
@@ -131,6 +129,8 @@ class TetoriminoBoard {
     // 自動でテトリミノを下に移動する間隔（ミリ秒）
     if (gameRunning && !isPaused) {
       config.bgm.volume = config.sliderVolume.value;
+      config.move.volume = config.sliderVolume.value;
+      config.rotate.volume = config.sliderVolume.value;
       config.bgm.play();
       config.bgm.loop = true;
 
@@ -441,7 +441,7 @@ class GameBoard {
   constructor() {
     this.cvs = document.getElementById("game");
     this.ctx = this.cvs.getContext("2d");
-    this.blockSize = 30;
+    this.blockSize = 28;
     this.boardRow = 20;
     this.boardCol = 10;
     this.canvasW = this.blockSize * this.boardCol;
@@ -450,8 +450,6 @@ class GameBoard {
     this.gameArea = this.createEmptyArea();
     this.score = 0;
     this.bestScore = 0;
-
-
   }
 
   // キャンバスのセットアップ
@@ -579,7 +577,6 @@ class GameBoard {
   }
 }
 
-
 // ゲームを初期化する
 function initializeGame() {
   gameBoard = new GameBoard();
@@ -674,7 +671,7 @@ const keyActions = {
 function handleKeyPress(event) {
   const action = keyActions[event.keyCode];
   if (action && !isPaused) {
-    config.move.play();
+    // config.move.play();
     action();
   }
 }
@@ -696,10 +693,10 @@ config.replayBtn.addEventListener("click", function () {
   // リスタート関数を実行
   config.switchPages(config.finalPage, config.mainPage);
   resetGame(gameBoard, tetoriminoBoard);
-})
+});
 
-config.sliderVolume.addEventListener("input", e => {
+config.sliderVolume.addEventListener("input", (e) => {
   config.bgm.volume = config.sliderVolume.value;
-  console.log(config.bgm.volume);
-})
-
+  config.move.volume = config.sliderVolume.value;
+  config.rotate.volume = config.sliderVolume.value;
+});
