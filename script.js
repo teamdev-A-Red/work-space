@@ -128,6 +128,7 @@ class TetoriminoBoard {
   initializeGameLoop() {
     // 自動でテトリミノを下に移動する間隔（ミリ秒）
     if (gameRunning && !isPaused) {
+      config.bgm.volume = config.sliderVolume.value;
       config.bgm.play();
       config.bgm.loop = true;
 
@@ -390,6 +391,8 @@ class GameBoard {
     this.gameArea = this.createEmptyArea();
     this.score = 0;
     this.bestScore = 0;
+
+
   }
 
   // キャンバスのセットアップ
@@ -621,4 +624,5 @@ config.replayBtn.addEventListener("click", function () {
 
 config.sliderVolume.addEventListener("input", e => {
   config.bgm.volume = config.sliderVolume.value;
+  console.log(config.bgm.volume);
 })
