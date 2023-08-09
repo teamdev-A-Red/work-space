@@ -74,7 +74,7 @@ class TetoriminoBoard {
     this.ctx = this.cvs.getContext("2d");
     this.boardRow = 20;
     this.boardCol = 10;
-    this.blockSize = 28;
+    this.blockSize = 30;
     this.canvasW = this.blockSize * this.boardCol;
     this.canvasH = this.blockSize * this.boardRow;
     this.currentShape = this.getNextShape();
@@ -163,7 +163,7 @@ class TetoriminoBoard {
   pauseGame() {
     clearInterval(autoMoveInterval);
     config.bgm.pause();
-    config.pauseBtn.innerHTML = "再開";
+    config.pauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
   }
 
   resumeGame() {
@@ -172,7 +172,7 @@ class TetoriminoBoard {
       runGameLoop(tetoriminoBoard, gameBoard);
     }, this.AUTO_MOVE_INTERVAL);
     config.bgm.play();
-    config.pauseBtn.innerHTML = "ポーズ";
+    config.pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
   }
 
   // ポーズの切り替え
@@ -441,7 +441,7 @@ class GameBoard {
   constructor() {
     this.cvs = document.getElementById("game");
     this.ctx = this.cvs.getContext("2d");
-    this.blockSize = 28;
+    this.blockSize = 30;
     this.boardRow = 20;
     this.boardCol = 10;
     this.canvasW = this.blockSize * this.boardCol;
@@ -618,7 +618,7 @@ function runGameLoop(tetoriminoBoard, gameBoard) {
 function resetGame() {
   gameRunning = true;
   isPaused = false;
-  config.pauseBtn.innerHTML = "ポーズ";
+  config.pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
   clearInterval(autoMoveInterval);
 
   // テトリミノボードをリセット
