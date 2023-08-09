@@ -12,12 +12,14 @@ const config = {
   bgm: document.getElementById("background_mp3"),
   quitBtn: document.getElementById("quit_btn"),
   replayBtn: document.getElementById("replay_btn"),
+  sliderVolume: document.getElementById("volume"),
 
   // ページ切り替え
   switchPages: function switchPages(page1, page2) {
     page1.style.display = "none";
     page2.style.display = "block";
   },
+
 };
 
 // ブロックの色の定義
@@ -59,12 +61,12 @@ const SHAPES = {
   ],
 };
 
+
 let gameBoard;
 let tetoriminoBoard;
 let gameRunning = true; // ゲームの状態を管理するフラグ
 let isPaused = false; // ポーズ状態を管理するフラグ
 let autoMoveInterval;
-const AUTO_MOVE_INTERVAL = 500; //ブロックが落ちる間隔
 
 // テトリミノを表示するためのクラス
 class TetoriminoBoard {
@@ -81,6 +83,7 @@ class TetoriminoBoard {
     this.currentColor = this.getNextColor();
     this.move = config.move;
     this.rotate = config.rotate;
+    this.AUTO_MOVE_INTERVAL = this.chooseDifficulty();
     this.nextShape = null;
     this.nextColor = null;
     this.setupCanvas();
@@ -91,6 +94,13 @@ class TetoriminoBoard {
     this.startGame();
   }
 
+  // ゲーム開始時に選択した難易度を受け取る
+  chooseDifficulty() {
+    this.difficulty = document.getElementById("difficultyOption");
+    console.log(this.difficulty.value); // 難易度レベルを確認
+    this.playSpeed = this.difficulty.value;
+    return this.playSpeed;
+  }
   // キャンバスのセットアップ
   setupCanvas() {
     this.cvs.width = this.canvasW;
@@ -120,13 +130,14 @@ class TetoriminoBoard {
   initializeGameLoop() {
     // 自動でテトリミノを下に移動する間隔（ミリ秒）
     if (gameRunning && !isPaused) {
+      config.bgm.volume = config.sliderVolume.value;
       config.bgm.play();
       config.bgm.loop = true;
 
       autoMoveInterval = setInterval(() => {
         this.moveDown(this.gameBoard);
         runGameLoop(tetoriminoBoard, gameBoard);
-      }, AUTO_MOVE_INTERVAL);
+      }, this.AUTO_MOVE_INTERVAL);
     }
   }
 
@@ -159,7 +170,7 @@ class TetoriminoBoard {
     autoMoveInterval = setInterval(() => {
       this.moveDown(this.gameBoard);
       runGameLoop(tetoriminoBoard, gameBoard);
-    }, AUTO_MOVE_INTERVAL);
+    }, this.AUTO_MOVE_INTERVAL);
     config.bgm.play();
     config.pauseBtn.innerHTML = "ポーズ";
   }
@@ -439,6 +450,8 @@ class GameBoard {
     this.gameArea = this.createEmptyArea();
     this.score = 0;
     this.bestScore = 0;
+
+
   }
 
   // キャンバスのセットアップ
@@ -566,6 +579,7 @@ class GameBoard {
   }
 }
 
+
 // ゲームを初期化する
 function initializeGame() {
   gameBoard = new GameBoard();
@@ -682,4 +696,10 @@ config.replayBtn.addEventListener("click", function () {
   // リスタート関数を実行
   config.switchPages(config.finalPage, config.mainPage);
   resetGame(gameBoard, tetoriminoBoard);
-});
+})
+
+config.sliderVolume.addEventListener("input", e => {
+  config.bgm.volume = config.sliderVolume.value;
+  console.log(config.bgm.volume);
+})
+
