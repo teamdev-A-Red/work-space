@@ -61,14 +61,14 @@ const SHAPES = {
 
 let gameBoard;
 let tetoriminoBoard;
-let gameRunning = true;
+let gameRunning = true; // ゲームの状態を管理するフラグ
 let isPaused = false; // ポーズ状態を管理するフラグ
 let autoMoveInterval;
-const AUTO_MOVE_INTERVAL = 500;
+const AUTO_MOVE_INTERVAL = 500; //ブロックが落ちる間隔
 
 // テトリミノを表示するためのクラス
 class TetoriminoBoard {
-  constructor(gameBoard, shape, color) {
+  constructor(gameBoard) {
     this.gameBoard = gameBoard;
     this.cvs = document.getElementById("tetorimino");
     this.ctx = this.cvs.getContext("2d");
@@ -77,13 +77,17 @@ class TetoriminoBoard {
     this.blockSize = 30;
     this.canvasW = this.blockSize * this.boardCol;
     this.canvasH = this.blockSize * this.boardRow;
-    this.currentShape = shape;
-    this.color = color;
+    this.currentShape = this.getNextShape();
+    this.currentColor = this.getNextColor();
     this.move = config.move;
     this.rotate = config.rotate;
+    this.nextShape = null;
+    this.nextColor = null;
     this.setupCanvas();
     this.setupInitialPosition();
-    this.drawRandomBlock();
+    this.setupNextBlockCanvas();
+    this.drawNextBlock();
+    this.drawSquareNextBlock();
     this.startGame();
   }
 
@@ -97,7 +101,7 @@ class TetoriminoBoard {
 
   // テトリミノの初期位置のセットアップ
   setupInitialPosition() {
-    this.x = 4;
+    this.x = Math.floor((this.boardCol - this.currentShape[0].length) / 2);
     this.y = 0;
   }
 
@@ -167,18 +171,12 @@ class TetoriminoBoard {
 
   // ランダムなテトリミノを描画
   drawRandomBlock() {
-    const shapeKeys = Object.keys(SHAPES);
-    const randomShapeKey =
-      shapeKeys[Math.floor(Math.random() * shapeKeys.length)];
-    const randomShape = SHAPES[randomShapeKey];
-    const randomColor =
-      COLORS[Math.floor(Math.random() * Object.keys(COLORS).length) + 1];
-    this.currentShape = randomShape;
-    this.color = randomColor;
+    this.currentShape = this.nextShape;
+    this.currentColor = this.nextColor;
   }
 
   // テトリミノを描画
-  drawBlock(gameBoard) {
+  drawBlock() {
     this.clearCanvas();
     const blockSize = this.blockSize;
 
@@ -188,7 +186,7 @@ class TetoriminoBoard {
         if (this.currentShape[row][col] === 1) {
           const x = (col + this.x) * blockSize;
           const y = (row + this.y) * blockSize;
-          this.drawSquare(x, y, blockSize, this.color);
+          this.drawSquare(x, y, blockSize, this.currentColor);
         }
       }
     }
@@ -202,7 +200,8 @@ class TetoriminoBoard {
         if (this.currentShape[row][col] === 1) {
           const x = (col + this.x) * blockSize;
           const y = (row + fallPreviewY) * blockSize;
-          this.drawSquare(x, y, blockSize, "rgba(255, 255, 255, 0.5)");
+          const opacity = 0.5;
+          this.drawSquare(x, y, blockSize, this.currentColor, opacity);
         }
       }
     }
@@ -214,8 +213,9 @@ class TetoriminoBoard {
   }
 
   // 正方形を描画
-  drawSquare(x, y, size, color) {
+  drawSquare(x, y, size, color, opacity = 1) {
     this.ctx.fillStyle = color;
+    this.ctx.globalAlpha = opacity;
     this.ctx.fillRect(x, y, size, size);
     this.ctx.strokeRect(x, y, size, size);
   }
@@ -235,7 +235,7 @@ class TetoriminoBoard {
       this.adjustPosition(gameBoard);
     }
 
-    this.drawBlock(gameBoard);
+    this.drawBlock();
   }
 
   // テトリミノの位置をゲーム画面の枠内に調整
@@ -357,6 +357,72 @@ class TetoriminoBoard {
     }
     return fallPreviewY;
   }
+
+  // 次のブロックを表示するための canvas 要素をセットアップ
+  setupNextBlockCanvas() {
+    this.nextBlockCvs = document.getElementById("nextBlock");
+    this.nextBlockCtx = this.nextBlockCvs.getContext("2d");
+    this.nextBlockCvs.width = this.blockSize * 4; // ブロック4つ分の幅
+    this.nextBlockCvs.height = this.blockSize * 4; // ブロック4つ分の高さ
+    this.nextBlockCvs.style.margin = "0 auto";
+    this.nextBlockCtx.strokeStyle = "rgba(0, 0, 0, 1)";
+  }
+
+  // 次のブロックを描画
+  drawNextBlock() {
+    this.nextBlockCtx.clearRect(
+      0,
+      0,
+      this.nextBlockCvs.width,
+      this.nextBlockCvs.height
+    );
+    const blockSize = this.blockSize;
+    const nextShape = this.getNextShape(); // 次のブロックの形状を取得
+    const nextColor = this.getNextColor(); // 次のブロックの色を取得
+
+    // ブロックの描画位置を調整
+    const xOffset =
+      (this.nextBlockCvs.width - nextShape[0].length * blockSize) / 2;
+    const yOffset =
+      (this.nextBlockCvs.height - nextShape.length * blockSize) / 2;
+
+    for (let row = 0; row < nextShape.length; row++) {
+      for (let col = 0; col < nextShape[row].length; col++) {
+        if (nextShape[row][col] === 1) {
+          const x = xOffset + col * blockSize;
+          const y = yOffset + row * blockSize;
+          this.drawSquareNextBlock(x, y, blockSize, nextColor);
+        }
+      }
+    }
+
+    this.nextShape = nextShape; // 次のブロックの形状を保持
+    this.nextColor = nextColor; // 次のブロックの色を保持
+  }
+
+  // 次のブロックの形状を取得
+  getNextShape() {
+    // ランダムなテトリミノの形状を返すロジックを実装
+    const shapeKeys = Object.keys(SHAPES);
+    const randomShapeKey =
+      shapeKeys[Math.floor(Math.random() * shapeKeys.length)];
+    return SHAPES[randomShapeKey];
+  }
+
+  // 次のブロックの色を取得
+  getNextColor() {
+    // ランダムな色を返すロジックを実装
+    const randomColor =
+      COLORS[Math.floor(Math.random() * Object.keys(COLORS).length) + 1];
+    return randomColor;
+  }
+
+  // 次のブロックを描画するための正方形を描画
+  drawSquareNextBlock(x, y, size, color) {
+    this.nextBlockCtx.fillStyle = color;
+    this.nextBlockCtx.fillRect(x, y, size, size);
+    this.nextBlockCtx.strokeRect(x, y, size, size);
+  }
 }
 
 // ゲームボードを表示するためのクラス
@@ -421,7 +487,7 @@ class GameBoard {
     const x = tetoriminoBoard.x;
     const y = tetoriminoBoard.y;
     const colorIndex = Object.keys(COLORS).find(
-      (key) => COLORS[key] === tetoriminoBoard.color
+      (key) => COLORS[key] === tetoriminoBoard.currentColor
     );
 
     for (let row = 0; row < shape.length; row++) {
@@ -446,6 +512,7 @@ class GameBoard {
 
     // 新しいテトリミノを生成し、初期位置を設定
     tetoriminoBoard.drawRandomBlock();
+    tetoriminoBoard.drawNextBlock();
     tetoriminoBoard.setupInitialPosition();
   }
 
@@ -464,7 +531,7 @@ class GameBoard {
       this.score += this.calculateScore(linesCleared);
       this.updateScoreDisplay();
 
-      // 初回の行をクリアした後、追加のクリア行があるか再帰的にチェックします
+      // 初回の行をクリアした後、追加のクリア行があるか再帰的にチェック
       this.checkAndClearLines();
     }
 
@@ -499,10 +566,15 @@ class GameBoard {
   }
 }
 
-// ゲームを開始する
-function startGame() {
+// ゲームを初期化する
+function initializeGame() {
   gameBoard = new GameBoard();
   tetoriminoBoard = new TetoriminoBoard(gameBoard);
+}
+
+// ゲームを開始する
+function startGame() {
+  initializeGame();
   runGameLoop(tetoriminoBoard, gameBoard);
 }
 
@@ -522,7 +594,7 @@ function runGameLoop(tetoriminoBoard, gameBoard) {
         gameBoard.mergeBlock(tetoriminoBoard, gameBoard);
         gameBoard.drawGameArea(tetoriminoBoard);
       }
-      tetoriminoBoard.drawBlock(gameBoard);
+      tetoriminoBoard.drawBlock();
       requestAnimationFrame(gameLoop);
     }
   };
@@ -532,19 +604,24 @@ function runGameLoop(tetoriminoBoard, gameBoard) {
 }
 
 // ゲームをリセットする
-function resetGame(gameBoard, tetoriminoBoard) {
+function resetGame() {
   gameRunning = true;
   isPaused = false;
   config.pauseBtn.innerHTML = "ポーズ";
   clearInterval(autoMoveInterval);
+
+  // テトリミノボードをリセット
   tetoriminoBoard.initializeGameLoop();
-  gameBoard.gameArea = gameBoard.createEmptyArea();
-  gameBoard.updateScoreDisplay();
-  tetoriminoBoard.drawRandomBlock();
+  tetoriminoBoard.currentShape = tetoriminoBoard.getNextShape();
+  tetoriminoBoard.currentColor = tetoriminoBoard.getNextColor();
+  tetoriminoBoard.drawNextBlock();
   tetoriminoBoard.setupInitialPosition();
-  gameBoard.drawGameArea(tetoriminoBoard);
+
+  // ゲームボードをリセット
+  gameBoard.gameArea = gameBoard.createEmptyArea();
   gameBoard.score = 0;
   gameBoard.updateScoreDisplay();
+  gameBoard.drawGameArea(tetoriminoBoard);
 }
 
 // ゲームオーバーのチェック
@@ -568,25 +645,23 @@ function handleGameOver(gameBoard) {
   }
 }
 
+// キーコードと処理の対応を定義
+const keyActions = {
+  37: () => tetoriminoBoard.moveLeft(gameBoard), //左方向
+  38: () => {
+    config.rotate.play();
+    tetoriminoBoard.rotateBlock(gameBoard); //右回転
+  },
+  39: () => tetoriminoBoard.moveRight(gameBoard), //右方向
+  40: () => tetoriminoBoard.moveDown(gameBoard), //下方向
+};
+
 // キー入力の処理
-function handleKeyPress(event, tetoriminoBoard, gameBoard) {
-  switch (event.keyCode) {
-    case 37: // 左矢印キー
-      config.move.play();
-      tetoriminoBoard.moveLeft(gameBoard);
-      break;
-    case 38: // 上矢印キー
-      config.rotate.play();
-      tetoriminoBoard.rotateBlock(gameBoard);
-      break;
-    case 39: // 右矢印キー
-      config.move.play();
-      tetoriminoBoard.moveRight(gameBoard);
-      break;
-    case 40: // 下矢印キー
-      config.move.play();
-      tetoriminoBoard.moveDown(gameBoard);
-      break;
+function handleKeyPress(event) {
+  const action = keyActions[event.keyCode];
+  if (action && !isPaused) {
+    config.move.play();
+    action();
   }
 }
 
