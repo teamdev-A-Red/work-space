@@ -20,7 +20,6 @@ const config = {
     page1.style.display = "none";
     page2.style.display = "block";
   },
-
 };
 
 // ブロックの色の定義
@@ -61,7 +60,6 @@ const SHAPES = {
     [1, 1],
   ],
 };
-
 
 let gameBoard;
 let tetoriminoBoard;
@@ -166,7 +164,7 @@ class TetoriminoBoard {
   pauseGame() {
     clearInterval(autoMoveInterval);
     config.bgm.pause();
-    config.pauseBtn.innerHTML = "再開";
+    config.pauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
   }
 
   resumeGame() {
@@ -175,7 +173,7 @@ class TetoriminoBoard {
       runGameLoop(tetoriminoBoard, gameBoard);
     }, this.AUTO_MOVE_INTERVAL);
     config.bgm.play();
-    config.pauseBtn.innerHTML = "ポーズ";
+    config.pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
   }
 
   // ポーズの切り替え
@@ -453,8 +451,6 @@ class GameBoard {
     this.gameArea = this.createEmptyArea();
     this.score = 0;
     this.bestScore = 0;
-
-
   }
 
   // キャンバスのセットアップ
@@ -583,7 +579,6 @@ class GameBoard {
   }
 }
 
-
 // ゲームを初期化する
 function initializeGame() {
   gameBoard = new GameBoard();
@@ -625,7 +620,7 @@ function runGameLoop(tetoriminoBoard, gameBoard) {
 function resetGame() {
   gameRunning = true;
   isPaused = false;
-  config.pauseBtn.innerHTML = "ポーズ";
+  config.pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
   clearInterval(autoMoveInterval);
 
   // テトリミノボードをリセット
@@ -700,12 +695,11 @@ config.replayBtn.addEventListener("click", function () {
   // リスタート関数を実行
   config.switchPages(config.finalPage, config.mainPage);
   resetGame(gameBoard, tetoriminoBoard);
-})
+});
 
-config.sliderVolume.addEventListener("input", e => {
+config.sliderVolume.addEventListener("input", (e) => {
   config.bgm.volume = config.sliderVolume.value;
   config.move.volume = config.sliderVolume.value;
   config.rotate.volume = config.sliderVolume.value;
-  console.log(config.bgm.volume);
 })
 
