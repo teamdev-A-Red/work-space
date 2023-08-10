@@ -7,6 +7,8 @@ const config = {
   pauseBtn: document.getElementById("pause_btn"),
   score: document.getElementById("score"),
   bestScore: document.getElementById("best-score"),
+  finalScore: document.getElementById("final-score"),
+  finalBestScore: document.getElementById("final-best-score"),
   move: document.getElementById("move"),
   rotate: document.getElementById("rotate"),
   slash: document.getElementById("slash"),
@@ -14,6 +16,10 @@ const config = {
   quitBtn: document.getElementById("quit_btn"),
   replayBtn: document.getElementById("replay_btn"),
   sliderVolume: document.getElementById("volume"),
+  upKey: document.querySelector(".up"),
+  downKey: document.querySelector(".down"),
+  leftKey: document.querySelector(".left"),
+  rightKey: document.querySelector(".right"),
 
   // ページ切り替え
   switchPages: function switchPages(page1, page2) {
@@ -656,6 +662,8 @@ function handleGameOver(gameBoard) {
     gameBoard.bestScore = gameBoard.score;
     gameBoard.updateBestScoreDisplay();
   }
+  config.finalScore.textContent = `${gameBoard.score}`;
+  config.finalBestScore.textContent = `${gameBoard.bestScore}`;
 }
 
 // キーコードと処理の対応を定義
@@ -677,6 +685,18 @@ function handleKeyPress(event) {
     action();
   }
 }
+
+function bindKeyClickEvent(keyElement, keyCode) {
+  keyElement.addEventListener("click", () => {
+    handleKeyPress({ keyCode });
+  });
+}
+
+// クリックイベントリスナーを設定
+bindKeyClickEvent(config.upKey, 38);
+bindKeyClickEvent(config.downKey, 40);
+bindKeyClickEvent(config.leftKey, 37);
+bindKeyClickEvent(config.rightKey, 39);
 
 config.startBtn.addEventListener("click", function () {
   startGame();
