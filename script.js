@@ -9,6 +9,7 @@ const config = {
   bestScore: document.getElementById("best-score"),
   move: document.getElementById("move"),
   rotate: document.getElementById("rotate"),
+  slash: document.getElementById("slash"),
   bgm: document.getElementById("background_mp3"),
   quitBtn: document.getElementById("quit_btn"),
   replayBtn: document.getElementById("replay_btn"),
@@ -556,6 +557,7 @@ class GameBoard {
 
   // 指定された行を削除し、上の行を下に詰める
   clearLines(row) {
+    config.slash.play();
     this.gameArea.splice(row, 1);
     this.gameArea.unshift(Array(this.boardCol).fill(0));
   }
@@ -699,4 +701,5 @@ config.sliderVolume.addEventListener("input", (e) => {
   config.bgm.volume = config.sliderVolume.value;
   config.move.volume = config.sliderVolume.value;
   config.rotate.volume = config.sliderVolume.value;
+  config.slash.volume = config.sliderVolume.value;
 });
