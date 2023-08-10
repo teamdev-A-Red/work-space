@@ -9,6 +9,7 @@ const config = {
   bestScore: document.getElementById("best-score"),
   move: document.getElementById("move"),
   rotate: document.getElementById("rotate"),
+  slash: document.getElementById("slash"),
   bgm: document.getElementById("background_mp3"),
   quitBtn: document.getElementById("quit_btn"),
   replayBtn: document.getElementById("replay_btn"),
@@ -131,6 +132,8 @@ class TetoriminoBoard {
     // 自動でテトリミノを下に移動する間隔（ミリ秒）
     if (gameRunning && !isPaused) {
       config.bgm.volume = config.sliderVolume.value;
+      config.move.volume = config.sliderVolume.value;
+      config.rotate.volume = config.sliderVolume.value;
       config.bgm.play();
       config.bgm.loop = true;
 
@@ -558,6 +561,7 @@ class GameBoard {
 
   // 指定された行を削除し、上の行を下に詰める
   clearLines(row) {
+    config.slash.play();
     this.gameArea.splice(row, 1);
     this.gameArea.unshift(Array(this.boardCol).fill(0));
   }
@@ -674,7 +678,7 @@ const keyActions = {
 function handleKeyPress(event) {
   const action = keyActions[event.keyCode];
   if (action && !isPaused) {
-    config.move.play();
+    // config.move.play();
     action();
   }
 }
@@ -700,6 +704,8 @@ config.replayBtn.addEventListener("click", function () {
 
 config.sliderVolume.addEventListener("input", e => {
   config.bgm.volume = config.sliderVolume.value;
+  config.move.volume = config.sliderVolume.value;
+  config.rotate.volume = config.sliderVolume.value;
   console.log(config.bgm.volume);
 })
 
