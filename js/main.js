@@ -5,6 +5,7 @@ import {
   gameBoard,
   tetoriminoBoard,
   bindKeyClickEvent,
+  updateVolumeIcon,
 } from "./game.js";
 import { config } from "./config.js";
 
@@ -32,10 +33,13 @@ config.replayBtn.addEventListener("click", function () {
   resetGame(gameBoard, tetoriminoBoard);
 });
 
-config.sliderVolume.addEventListener("input", (e) => {
-  config.bgm.volume = config.sliderVolume.value;
-  config.move.volume = config.sliderVolume.value;
-  config.rotate.volume = config.sliderVolume.value;
-  config.slash.volume = config.sliderVolume.value;
-  config.gameover.volume = config.sliderVolume.value;
+// 音量コントロールを初期化
+config.sliderVolume.addEventListener("input", () => {
+  const newVolume = parseFloat(config.sliderVolume.value);
+  config.bgm.volume = newVolume;
+  config.move.volume = newVolume;
+  config.rotate.volume = newVolume;
+  config.slash.volume = newVolume;
+  config.gameover.volume = newVolume;
+  updateVolumeIcon(newVolume);
 });

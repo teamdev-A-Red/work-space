@@ -266,6 +266,7 @@ select {
 
 .volume-control i {
   padding-right: 8px;
+  color: white;
 }
 
 .volume-control input {

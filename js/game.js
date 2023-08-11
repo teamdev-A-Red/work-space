@@ -109,6 +109,7 @@ export class TetoriminoBoard {
       config.bgm.volume = config.sliderVolume.value;
       config.move.volume = config.sliderVolume.value;
       config.rotate.volume = config.sliderVolume.value;
+      config.slash.volume = config.sliderVolume.value;
       config.gameover.volume = config.sliderVolume.value;
       config.bgm.play();
       config.bgm.loop = true;
@@ -600,6 +601,7 @@ export function resetGame() {
   isPaused = false;
   config.pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
   config.bgm.currentTime = 0;
+  config.gameover.pause();
   clearInterval(autoMoveInterval);
 
   // テトリミノボードをリセット
@@ -664,4 +666,15 @@ export function bindKeyClickEvent(keyElement, keyCode) {
   keyElement.addEventListener("click", () => {
     handleKeyPress({ keyCode });
   });
+}
+
+// 音量アイコンを音量レベルに基づいて更新
+export function updateVolumeIcon(volume) {
+  if (volume === 0) {
+    config.volumeIcon.className = "fa-solid fa-volume-mute fa-inverse";
+  } else if (volume > 0 && volume < 0.4) {
+    config.volumeIcon.className = "fa-solid fa-volume-low fa-inverse";
+  } else {
+    config.volumeIcon.className = "fa-solid fa-volume-high fa-inverse";
+  }
 }

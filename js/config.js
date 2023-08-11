@@ -17,6 +17,7 @@ export const config = {
   quitBtn: document.getElementById("quit_btn"),
   replayBtn: document.getElementById("replay_btn"),
   sliderVolume: document.getElementById("volume"),
+  volumeIcon: document.getElementById("volume-icon"),
   upKey: document.querySelector(".up"),
   downKey: document.querySelector(".down"),
   leftKey: document.querySelector(".left"),
