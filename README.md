@@ -3,10 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tetris</title>
-    <style>
-        /* ここにCSSスタイルを記述 */
-    </style>
 </head>
 <body>
 
@@ -17,10 +13,8 @@
 <ol>
     <li>リポジトリをクローンしてください</li>
     <code>git clone 【クローンするリポジトリのgit】</code>
-
     <li>テトリスゲームが格納されているディレクトリに移動します</li>
     <code>cd 【テトリスゲームが格納されているフォルダ】</code>
-
     <li>index.htmlをプログラムから実行、もしくはLive Server等を用いて実行する</li>
 </ol>
 
