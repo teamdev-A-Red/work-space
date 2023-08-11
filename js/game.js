@@ -438,7 +438,7 @@ export class GameBoard {
     this.cvs.height = this.canvasH;
     this.cvs.style.width = this.canvasW + "px";
     this.ctx.fillStyle = "#000";
-    this.ctx.strokeStyle = "rgba(0, 0, 0, 1)";
+    this.ctx.strokeStyle = "rgba(220, 220, 200, 1)";
   }
 
   // 空のゲームエリアを作成

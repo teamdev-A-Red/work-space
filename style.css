@@ -188,7 +188,7 @@ select {
 .score-wrapper p {
   font-size: 1.6rem;
   border: 2px solid #ffffff;
-  padding: 1rem;
+  padding: 10px;
   background-color: #000000;
   color: white;
   border: 10px solid var(--primary-color);
