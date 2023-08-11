@@ -12,6 +12,8 @@ const config = {
   move: document.getElementById("move"),
   rotate: document.getElementById("rotate"),
   slash: document.getElementById("slash"),
+  pause: document.getElementById("pause"),
+  resume: document.getElementById("resume"),
   bgm: document.getElementById("background_mp3"),
   quitBtn: document.getElementById("quit_btn"),
   replayBtn: document.getElementById("replay_btn"),
@@ -169,6 +171,7 @@ class TetoriminoBoard {
 
   pauseGame() {
     clearInterval(autoMoveInterval);
+    config.pause.play();
     config.bgm.pause();
     config.pauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
   }
@@ -178,6 +181,7 @@ class TetoriminoBoard {
       this.moveDown(this.gameBoard);
       runGameLoop(tetoriminoBoard, gameBoard);
     }, this.AUTO_MOVE_INTERVAL);
+    config.resume.play();
     config.bgm.play();
     config.pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
   }
@@ -722,4 +726,6 @@ config.sliderVolume.addEventListener("input", (e) => {
   config.move.volume = config.sliderVolume.value;
   config.rotate.volume = config.sliderVolume.value;
   config.slash.volume = config.sliderVolume.value;
+  config.pause.volume = config.sliderVolume.value;
+  config.restart.volume = config.sliderVolume.value;
 });
