@@ -37,4 +37,5 @@ config.sliderVolume.addEventListener("input", (e) => {
   config.move.volume = config.sliderVolume.value;
   config.rotate.volume = config.sliderVolume.value;
   config.slash.volume = config.sliderVolume.value;
+  config.gameover.volume = config.sliderVolume.value;
 });

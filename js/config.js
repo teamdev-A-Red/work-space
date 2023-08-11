@@ -12,6 +12,7 @@ export const config = {
   move: document.getElementById("move"),
   rotate: document.getElementById("rotate"),
   slash: document.getElementById("slash"),
+  gameover: document.getElementById("gameover"),
   bgm: document.getElementById("background_mp3"),
   quitBtn: document.getElementById("quit_btn"),
   replayBtn: document.getElementById("replay_btn"),

@@ -1,3 +1,5 @@
+import { config } from "./config.js";
+
 // ブロックの色の定義
 export const COLORS = {
   1: "#FF0000", // Red
@@ -72,7 +74,6 @@ export class TetoriminoBoard {
   // ゲーム開始時に選択した難易度を受け取る
   chooseDifficulty() {
     this.difficulty = document.getElementById("difficultyOption");
-    console.log(this.difficulty.value); // 難易度レベルを確認
     this.playSpeed = this.difficulty.value;
     return this.playSpeed;
   }
@@ -108,6 +109,7 @@ export class TetoriminoBoard {
       config.bgm.volume = config.sliderVolume.value;
       config.move.volume = config.sliderVolume.value;
       config.rotate.volume = config.sliderVolume.value;
+      config.gameover.volume = config.sliderVolume.value;
       config.bgm.play();
       config.bgm.loop = true;
 
@@ -597,6 +599,7 @@ export function resetGame() {
   gameRunning = true;
   isPaused = false;
   config.pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+  config.bgm.currentTime = 0;
   clearInterval(autoMoveInterval);
 
   // テトリミノボードをリセット
@@ -628,6 +631,8 @@ export function checkGameOver(gameBoard) {
 export function handleGameOver(gameBoard) {
   config.switchPages(config.mainPage, config.finalPage);
   gameRunning = false;
+  config.bgm.pause();
+  config.gameover.play();
   if (gameBoard.score > gameBoard.bestScore) {
     gameBoard.bestScore = gameBoard.score;
     gameBoard.updateBestScoreDisplay();
@@ -651,7 +656,6 @@ export const keyActions = {
 export function handleKeyPress(event) {
   const action = keyActions[event.keyCode];
   if (action && !isPaused) {
-    // config.move.play();
     action();
   }
 }

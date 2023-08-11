@@ -19,6 +19,7 @@
       href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0-beta3/css/all.min.css"
       rel="stylesheet"
     />
+    <link rel="icon" href="image/icon.png" type="image/png" />
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="media-queries.css" />
     <audio id="background_mp3" preload="auto">
@@ -32,6 +33,9 @@
     </audio>
     <audio id="slash" preload="auto">
       <source src="audio/slash.mp3" type="audio/mp3" />
+    </audio>
+    <audio id="gameover" preload="auto">
+      <source src="audio/gameover.mp3" type="audio/mp3" />
     </audio>
   </head>
 
@@ -108,7 +112,7 @@
               <input
                 type="range"
                 id="volume"
-                value="0.1"
+                value="0.05"
                 min="0.0"
                 max="0.6"
                 step="0.05"
@@ -150,6 +154,6 @@
       </div>
     </div>
 
-    <script type="module" src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
   </body>
 </html>
