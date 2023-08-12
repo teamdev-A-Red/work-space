@@ -33,7 +33,7 @@ config.replayBtn.addEventListener("click", function () {
   resetGame(gameBoard, tetoriminoBoard);
 });
 
-// 音量コントロールを初期化
+// 音量コントロール
 config.sliderVolume.addEventListener("input", () => {
   const newVolume = parseFloat(config.sliderVolume.value);
   config.bgm.volume = newVolume;

@@ -14,6 +14,7 @@ export const config = {
   slash: document.getElementById("slash"),
   gameover: document.getElementById("gameover"),
   bgm: document.getElementById("background_mp3"),
+  pause: document.getElementById("pause"),
   quitBtn: document.getElementById("quit_btn"),
   replayBtn: document.getElementById("replay_btn"),
   sliderVolume: document.getElementById("volume"),

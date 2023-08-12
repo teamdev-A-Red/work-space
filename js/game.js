@@ -156,6 +156,7 @@ export class TetoriminoBoard {
 
   pauseGame() {
     clearInterval(autoMoveInterval);
+    config.pause.play();
     config.bgm.pause();
     config.pauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
   }
