@@ -1,36 +1,7 @@
-const config = {
-  startBtn: document.getElementById("start_btn"),
-  resetBtn: document.getElementById("reset_btn"),
-  initialPage: document.getElementById("initialPage"),
-  mainPage: document.getElementById("mainPage"),
-  finalPage: document.getElementById("finalPage"),
-  pauseBtn: document.getElementById("pause_btn"),
-  score: document.getElementById("score"),
-  bestScore: document.getElementById("best-score"),
-  finalScore: document.getElementById("final-score"),
-  finalBestScore: document.getElementById("final-best-score"),
-  move: document.getElementById("move"),
-  rotate: document.getElementById("rotate"),
-  slash: document.getElementById("slash"),
-  pause: document.getElementById("pause"),
-  bgm: document.getElementById("background_mp3"),
-  quitBtn: document.getElementById("quit_btn"),
-  replayBtn: document.getElementById("replay_btn"),
-  sliderVolume: document.getElementById("volume"),
-  upKey: document.querySelector(".up"),
-  downKey: document.querySelector(".down"),
-  leftKey: document.querySelector(".left"),
-  rightKey: document.querySelector(".right"),
-
-  // ページ切り替え
-  switchPages: function switchPages(page1, page2) {
-    page1.style.display = "none";
-    page2.style.display = "block";
-  },
-};
+import { config } from "./config.js";
 
 // ブロックの色の定義
-const COLORS = {
+export const COLORS = {
   1: "#FF0000", // Red
   2: "#00FF00", // Green
   3: "#0000FF", // Blue
@@ -38,7 +9,7 @@ const COLORS = {
 };
 
 // テトリミノの形状の定義
-const SHAPES = {
+export const SHAPES = {
   // L-shape
   L: [
     [0, 0, 1],
@@ -46,14 +17,14 @@ const SHAPES = {
     [0, 0, 0],
   ],
 
-  // // T-shape
+  // T-shape
   T: [
     [0, 1, 0],
     [1, 1, 1],
     [0, 0, 0],
   ],
 
-  // // I-shape
+  // I-shape
   I: [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -66,16 +37,30 @@ const SHAPES = {
     [1, 1],
     [1, 1],
   ],
+
+  // J-shape
+  J: [
+    [1, 0, 0],
+    [1, 1, 1],
+    [0, 0, 0],
+  ],
+
+  // z-shape
+  Z: [
+    [0, 1, 1],
+    [1, 1, 0],
+    [0, 0, 0],
+  ],
 };
 
-let gameBoard;
-let tetoriminoBoard;
-let gameRunning = true; // ゲームの状態を管理するフラグ
-let isPaused = false; // ポーズ状態を管理するフラグ
-let autoMoveInterval;
+export let gameBoard;
+export let tetoriminoBoard;
+export let gameRunning = true; // ゲームの状態を管理するフラグ
+export let isPaused = false; // ポーズ状態を管理するフラグ
+export let autoMoveInterval;
 
 // テトリミノを表示するためのクラス
-class TetoriminoBoard {
+export class TetoriminoBoard {
   constructor(gameBoard) {
     this.gameBoard = gameBoard;
     this.cvs = document.getElementById("tetorimino");
@@ -103,7 +88,6 @@ class TetoriminoBoard {
   // ゲーム開始時に選択した難易度を受け取る
   chooseDifficulty() {
     this.difficulty = document.getElementById("difficultyOption");
-    console.log(this.difficulty.value); // 難易度レベルを確認
     this.playSpeed = this.difficulty.value;
     return this.playSpeed;
   }
@@ -139,6 +123,8 @@ class TetoriminoBoard {
       config.bgm.volume = config.sliderVolume.value;
       config.move.volume = config.sliderVolume.value;
       config.rotate.volume = config.sliderVolume.value;
+      config.slash.volume = config.sliderVolume.value;
+      config.gameover.volume = config.sliderVolume.value;
       config.bgm.play();
       config.bgm.loop = true;
 
@@ -446,7 +432,7 @@ class TetoriminoBoard {
 }
 
 // ゲームボードを表示するためのクラス
-class GameBoard {
+export class GameBoard {
   constructor() {
     this.cvs = document.getElementById("game");
     this.ctx = this.cvs.getContext("2d");
@@ -467,7 +453,7 @@ class GameBoard {
     this.cvs.height = this.canvasH;
     this.cvs.style.width = this.canvasW + "px";
     this.ctx.fillStyle = "#000";
-    this.ctx.strokeStyle = "rgba(0, 0, 0, 1)";
+    this.ctx.strokeStyle = "rgba(220, 220, 200, 1)";
   }
 
   // 空のゲームエリアを作成
@@ -588,18 +574,18 @@ class GameBoard {
 }
 
 // ゲームを初期化する
-function initializeGame() {
+export function initializeGame() {
   gameBoard = new GameBoard();
   tetoriminoBoard = new TetoriminoBoard(gameBoard);
 }
 
 // ゲームを開始する
-function startGame() {
+export function startGame() {
   initializeGame();
   runGameLoop(tetoriminoBoard, gameBoard);
 }
 
-function runGameLoop(tetoriminoBoard, gameBoard) {
+export function runGameLoop(tetoriminoBoard, gameBoard) {
   // ゲームループの実行
   const gameLoop = () => {
     if (gameRunning && !isPaused) {
@@ -625,10 +611,12 @@ function runGameLoop(tetoriminoBoard, gameBoard) {
 }
 
 // ゲームをリセットする
-function resetGame() {
+export function resetGame() {
   gameRunning = true;
   isPaused = false;
   config.pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+  config.bgm.currentTime = 0;
+  config.gameover.pause();
   clearInterval(autoMoveInterval);
 
   // テトリミノボードをリセット
@@ -646,7 +634,7 @@ function resetGame() {
 }
 
 // ゲームオーバーのチェック
-function checkGameOver(gameBoard) {
+export function checkGameOver(gameBoard) {
   // マージされたテトリミノの一番上の行をチェック
   for (let col = 0; col < gameBoard.boardCol; col++) {
     if (gameBoard.gameArea[0][col] !== 0) {
@@ -657,9 +645,11 @@ function checkGameOver(gameBoard) {
 }
 
 // ゲームオーバーの処理
-function handleGameOver(gameBoard) {
+export function handleGameOver(gameBoard) {
   config.switchPages(config.mainPage, config.finalPage);
   gameRunning = false;
+  config.bgm.pause();
+  config.gameover.play();
   if (gameBoard.score > gameBoard.bestScore) {
     gameBoard.bestScore = gameBoard.score;
     gameBoard.updateBestScoreDisplay();
@@ -669,7 +659,7 @@ function handleGameOver(gameBoard) {
 }
 
 // キーコードと処理の対応を定義
-const keyActions = {
+export const keyActions = {
   37: () => tetoriminoBoard.moveLeft(gameBoard), //左方向
   38: () => {
     config.rotate.play();
@@ -680,49 +670,26 @@ const keyActions = {
 };
 
 // キー入力の処理
-function handleKeyPress(event) {
+export function handleKeyPress(event) {
   const action = keyActions[event.keyCode];
   if (action && !isPaused) {
-    // config.move.play();
     action();
   }
 }
 
-function bindKeyClickEvent(keyElement, keyCode) {
+export function bindKeyClickEvent(keyElement, keyCode) {
   keyElement.addEventListener("click", () => {
     handleKeyPress({ keyCode });
   });
 }
 
-// クリックイベントリスナーを設定
-bindKeyClickEvent(config.upKey, 38);
-bindKeyClickEvent(config.downKey, 40);
-bindKeyClickEvent(config.leftKey, 37);
-bindKeyClickEvent(config.rightKey, 39);
-
-config.startBtn.addEventListener("click", function () {
-  startGame();
-});
-
-config.resetBtn.addEventListener("click", function () {
-  resetGame(gameBoard, tetoriminoBoard);
-});
-
-config.quitBtn.addEventListener("click", function () {
-  // ページを再ロード
-  location.reload();
-});
-
-config.replayBtn.addEventListener("click", function () {
-  // リスタート関数を実行
-  config.switchPages(config.finalPage, config.mainPage);
-  resetGame(gameBoard, tetoriminoBoard);
-});
-
-config.sliderVolume.addEventListener("input", (e) => {
-  config.bgm.volume = config.sliderVolume.value;
-  config.move.volume = config.sliderVolume.value;
-  config.rotate.volume = config.sliderVolume.value;
-  config.slash.volume = config.sliderVolume.value;
-  config.pause.volume = config.sliderVolume.value;
-});
+// 音量アイコンを音量レベルに基づいて更新
+export function updateVolumeIcon(volume) {
+  if (volume === 0) {
+    config.volumeIcon.className = "fa-solid fa-volume-mute fa-inverse";
+  } else if (volume > 0 && volume < 0.4) {
+    config.volumeIcon.className = "fa-solid fa-volume-low fa-inverse";
+  } else {
+    config.volumeIcon.className = "fa-solid fa-volume-high fa-inverse";
+  }
+}
