@@ -72,7 +72,6 @@ export class TetoriminoBoard {
     this.canvasH = this.blockSize * this.boardRow;
     this.currentShape = this.getNextShape();
     this.currentColor = this.getNextColor();
-    this.move = config.move;
     this.rotate = config.rotate;
     this.AUTO_MOVE_INTERVAL = this.chooseDifficulty();
     this.nextShape = null;
@@ -120,11 +119,6 @@ export class TetoriminoBoard {
   initializeGameLoop() {
     // 自動でテトリミノを下に移動する間隔（ミリ秒）
     if (gameRunning && !isPaused) {
-      config.bgm.volume = config.sliderVolume.value;
-      config.move.volume = config.sliderVolume.value;
-      config.rotate.volume = config.sliderVolume.value;
-      config.slash.volume = config.sliderVolume.value;
-      config.gameover.volume = config.sliderVolume.value;
       config.bgm.play();
       config.bgm.loop = true;
 
@@ -577,6 +571,7 @@ export class GameBoard {
 export function initializeGame() {
   gameBoard = new GameBoard();
   tetoriminoBoard = new TetoriminoBoard(gameBoard);
+  updateVolume();
 }
 
 // ゲームを開始する
@@ -692,4 +687,14 @@ export function updateVolumeIcon(volume) {
   } else {
     config.volumeIcon.className = "fa-solid fa-volume-high fa-inverse";
   }
+}
+
+export function updateVolume() {
+  const newVolume = parseFloat(config.sliderVolume.value);
+  config.bgm.volume = newVolume;
+  config.rotate.volume = newVolume;
+  config.slash.volume = newVolume;
+  config.pause.volume = newVolume;
+  config.gameover.volume = newVolume;
+  updateVolumeIcon(newVolume);
 }

@@ -9,7 +9,6 @@ export const config = {
   bestScore: document.getElementById("best-score"),
   finalScore: document.getElementById("final-score"),
   finalBestScore: document.getElementById("final-best-score"),
-  move: document.getElementById("move"),
   rotate: document.getElementById("rotate"),
   slash: document.getElementById("slash"),
   gameover: document.getElementById("gameover"),

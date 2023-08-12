@@ -164,6 +164,7 @@ select {
     var(--secondary-color),
     #90cdf4
   );
+  display: none;
 }
 
 .game-page-container {
