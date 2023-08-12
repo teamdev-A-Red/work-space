@@ -5,6 +5,7 @@ export const config = {
   mainPage: document.getElementById("mainPage"),
   finalPage: document.getElementById("finalPage"),
   pauseBtn: document.getElementById("pause_btn"),
+  pauseIcon: document.getElementById("pause-icon"),
   score: document.getElementById("score"),
   bestScore: document.getElementById("best-score"),
   finalScore: document.getElementById("final-score"),

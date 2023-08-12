@@ -152,7 +152,7 @@ export class TetoriminoBoard {
     clearInterval(autoMoveInterval);
     config.pause.play();
     config.bgm.pause();
-    config.pauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+    config.pauseIcon.className = "fa-solid fa-play";
   }
 
   resumeGame() {
@@ -161,7 +161,7 @@ export class TetoriminoBoard {
       runGameLoop(tetoriminoBoard, gameBoard);
     }, this.AUTO_MOVE_INTERVAL);
     config.bgm.play();
-    config.pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+    config.pauseIcon.className = "fa-solid fa-pause";
   }
 
   // ポーズの切り替え
@@ -609,7 +609,7 @@ export function runGameLoop(tetoriminoBoard, gameBoard) {
 export function resetGame() {
   gameRunning = true;
   isPaused = false;
-  config.pauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+  config.pauseIcon.className = "fa-solid fa-pause";
   config.bgm.currentTime = 0;
   config.gameover.pause();
   clearInterval(autoMoveInterval);
